@@ -31,3 +31,35 @@
   float: right;
   margin-bottom: 5px;
 }
+
+.loading-spinner-center {
+  width: 120px;
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  margin-top: -14px;
+  margin-right: -60px;
+}
+
+.loading-spinner-center i,
+.loading-spinner-center span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.loading-spinner-center i {
+  margin-right: 10px;
+}
+
+.loading-spinner-center span {
+  font-family: sans-serif;
+  font-size: 20px;
+}
+
+#sign-up-container {
+  margin-top: 230px;
+}
+
+button[type="submit"] {
+  margin-bottom: 30px;
+}

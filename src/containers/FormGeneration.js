@@ -3,6 +3,7 @@ import { reduxForm } from 'redux-form';
 import FormHeader from '../components/FormGenerationHeader';
 import QuestionsGeneration from '../components/QuestionsGeneration';
 import sendRequest from '../utils/sendRequest';
+import getDataFromNode from './../utils/getDataFromNode';
 
 const fields = [
   'name',
@@ -13,22 +14,36 @@ const fields = [
   'questions[].options[]'
 ];
 
-const validate = (values, props) => {
-  console.log(props);
+// const validate = (values, props) => {
+//   console.log(props);
 
-  const errors = {};
+//   const errors = {};
 
-  if (!values.name) {
-    errors.name = 'Поле обязательно для заполнения'
-  }
-  else if (!/\D/g.test(values.name)) {
-    errors.name = 'Недопустимый формат'
-  }
+//   if (!values.name) {
+//     errors.name = 'Поле обязательно для заполнения'
+//   }
+//   else if (!/\D/g.test(values.name)) {
+//     errors.name = 'Недопустимый формат'
+//   }
 
-  return errors;
-}
+//   return errors;
+// }
 
 class FormGeneration extends Component {
+
+  url;
+
+  componentWillMount() {
+
+    let data = getDataFromNode('info', [ 'postUrl']);
+
+    if ( data.fatalError ) {
+      alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+    } else {
+      this.url = data.postUrl;
+    }
+
+  }
 
   render() {
 
@@ -37,6 +52,8 @@ class FormGeneration extends Component {
       values
     } = this.props;
 
+    const url = this.url;
+
     const handleSubmit = (e) => {
 
       e.preventDefault();
@@ -44,7 +61,7 @@ class FormGeneration extends Component {
       const str = JSON.stringify(values, '', 2);
       console.log(str);
 
-      sendRequest('POST', '/api/comments', str, function (xhr) {
+      sendRequest('POST', url, str, function (xhr) {
         console.log(xhr);
       })
       
@@ -65,6 +82,6 @@ class FormGeneration extends Component {
 
 export default reduxForm({
   form: 'generation',
-  fields,
-  validate
+  fields
+  // validate
 })(FormGeneration);

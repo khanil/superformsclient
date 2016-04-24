@@ -23,8 +23,9 @@ const InputSelect = ({
       <select 
         {...field}
         className='form-control'
-        required={isRequired} 
-        defaultValue={0}>
+        required={isRequired} >
+
+        <option/>
 
         {
           options.map((option, index) => (

@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import title from './formTitle';
+import interview from './interview';
 import { reducer as formReducer } from 'redux-form';
 
 export default combineReducers({
-  title,
+  interview,
   form: formReducer
 });

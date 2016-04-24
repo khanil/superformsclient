@@ -1,7 +1,5 @@
 var NODE_ENV = process.env.NODE_ENV;
 
-//Ololl
-
 if (NODE_ENV == 'development') {
   console.log('DEVELOPMENT_MODE');
   var webpack = require('webpack');
@@ -12,6 +10,7 @@ if (NODE_ENV == 'development') {
   console.log('PRODUCTION_TEST_MODE');
 }
 
+var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -43,9 +42,102 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + '/dist/views/index.html');
 });
 
-app.post('/api/comments', function(req, res) {
+app.get("/signin", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/signIn.html');
+});
+
+app.get("/signup", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/signUp.html');
+});
+
+app.get("/generation", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/generation.html');
+});
+
+app.get("/report", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/report.html');
+});
+
+app.get("/interview", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/interview.html');
+});
+
+var FORMS_FILE = path.join(__dirname, 'forms.json');
+
+app.get('/api/forms', function(req, res) {
+
+  console.log('Get query to /api/forms.');
+
+  fs.readFile(FORMS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var data = JSON.parse(data);
+
+    var boilerplate = data[data.length-1];
+
+    res.json(boilerplate);
+    console.log('Send response from /api/forms:');
+    console.log(boilerplate);
+  });
+});
+
+app.post('/api/forms', function(req, res) {
   console.log(req.body);
   res.sendStatus(200);
+
+  fs.readFile(FORMS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var comments = JSON.parse(data);
+    // NOTE: In a real implementation, we would likely rely on a database or
+    // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
+    // treat Date.now() as unique-enough for our purposes.
+    var newComment = req.body;
+    comments.push(newComment);
+
+    fs.writeFile(FORMS_FILE, JSON.stringify(comments, null, 4), function(err) {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      // res.json(comments);
+    });
+  });
+});
+
+var ANSWERS_FILE = path.join(__dirname, 'answers.json');
+
+app.post('/api/answers', function(req, res) {
+  console.log(req.body);
+  res.sendStatus(200);
+
+  fs.readFile(ANSWERS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var comments = JSON.parse(data);
+    // NOTE: In a real implementation, we would likely rely on a database or
+    // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
+    // treat Date.now() as unique-enough for our purposes.
+    var newAnswer = req.body;
+    comments.push(newAnswer);
+
+    fs.writeFile(ANSWERS_FILE, JSON.stringify(comments, null, 4), function(err) {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+      // res.json(comments);
+    });
+  });
 });
 
 app.listen(port, function(error) {

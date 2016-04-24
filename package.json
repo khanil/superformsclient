@@ -28,6 +28,7 @@
     "babel-polyfill": "^6.7.4",
     "babel-runtime": "^6.6.1",
     "react": "^15.0.1",
+    "react-bootstrap-table": "^2.1.4",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.2",
     "redux": "^3.4.0",

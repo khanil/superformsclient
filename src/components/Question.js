@@ -3,6 +3,7 @@ import InputText from './InputText';
 import InputTextarea from './InputTextarea';
 import InputSelect from './InputSelect';
 import InputOption from './InputOption';
+import { STRING, PARAGRAPH, DATETIME, SELECT } from './../constants/questionTypes';
 
 export default class Question extends Component {
 
@@ -67,7 +68,7 @@ export default class Question extends Component {
           label= 'Тип вопроса'
           field= {type}
           isRequired= {true}
-          options= {['Строка', 'Абзац', 'Дата/Время', 'Выбор из списка']} />
+          options= {[ STRING, PARAGRAPH, DATETIME, SELECT ]} />
 
         {
           (flag)

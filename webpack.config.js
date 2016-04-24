@@ -8,12 +8,14 @@ module.exports = {
   entry: [
     'webpack-hot-middleware/client', // Для поддержки hot-reload
     'babel-polyfill',
-    './src/index'
+    // './src/generation' //Генерация формы
+    // './src/interview' //Анкета
+    './src/report' //Отчет
   ],
 
   output: {
     path: path.join(__dirname, 'dist/scripts'),
-    filename: 'home.js',
+    filename: 'report.js',
     publicPath: '/static/'
   },
 
