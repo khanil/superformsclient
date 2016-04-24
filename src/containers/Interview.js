@@ -5,6 +5,7 @@ import getDataFromNode from './../utils/getDataFromNode';
 import { fetchBoilerplate } from './../actions/actionsInterview';
 import Header from './../components/interview/Header';
 import Form from './../components/interview/Form';
+import validate from './../utils/interviewValidation'
 
 const fields = [
   'auth',
@@ -40,14 +41,13 @@ class Interview extends Component {// eslint-disable-line no-undef
       description,
       questions,
       values,
-      isFetching
+      isFetching,
+      handleSubmit
     } = this.props;
 
     const url = this.url;
 
-    const handleSubmit = (e) => {
-
-      e.preventDefault();
+    const mySubmit = (values) => {
 
       const str = JSON.stringify(values, '', 2);
       console.log(str);
@@ -81,7 +81,8 @@ class Interview extends Component {// eslint-disable-line no-undef
             fields={fields}
             questions={questions}
             values={values}
-            handleSubmit={handleSubmit} />
+            handleSubmit={handleSubmit}
+            submit={mySubmit} />
 
         </div>
       }
@@ -99,7 +100,7 @@ const mapStateToProps = (state) => {
     questions: state.interview.boilerplate.questions,
     name: state.interview.boilerplate.name,
     description: state.interview.boilerplate.description,
-    initialValues: { answers : state.interview.boilerplate.questions.map(() => { return '' } ) }
+    initialValues: { answers : state.interview.boilerplate.questions.map( () => ('') ) }
   }
 };
 
@@ -113,5 +114,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default reduxForm({
   form: 'interview',
-  fields
+  fields,
+  validate
 }, mapStateToProps, mapDispatchToProps)(Interview);

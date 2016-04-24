@@ -3,7 +3,7 @@ import InputText from './InputText';
 import InputTextarea from './InputTextarea';
 import InputSelect from './InputSelect';
 import InputOption from './InputOption';
-import { STRING, PARAGRAPH, DATETIME, SELECT } from './../constants/questionTypes';
+import { ALL_TYPES_ARRAY } from './../constants/questionTypes';
 
 export default class Question extends Component {
 
@@ -68,7 +68,7 @@ export default class Question extends Component {
           label= 'Тип вопроса'
           field= {type}
           isRequired= {true}
-          options= {[ STRING, PARAGRAPH, DATETIME, SELECT ]} />
+          options= {ALL_TYPES_ARRAY} />
 
         {
           (flag)
@@ -86,40 +86,6 @@ export default class Question extends Component {
             </button>
           : null
         }
-
-
-          {/*<div className='form-group'>
-            <label>Вопрос</label>
-            <input name={this.props.idd+'[questionTitle]'} type='text' className='form-control' required='required' />
-          </div>
-
-          <div className='form-group'>
-            <label>Описание вопроса</label>
-            <textarea name={this.props.idd+'[questionDescription]'} className='form-control' rows='3' />
-          </div>
-
-          <div className='form-group'>
-            <label>Тип ответа</label> 
-            <select name={this.props.idd+'[questionType]'} 
-              className='form-control' 
-              required='required' 
-              defaultValue='string'
-              onChange={this.changeHandler}>
-              <option value='string'>Строка</option>
-              <option value='paragraph'>Абзац</option>
-              <option value='datetime'>Дата/Время</option>
-              <option value='select'>Выбор из списка</option>
-            </select>
-          </div>
-
-          <div className='form-group'>
-            <div className='checkbox'>
-              <label>
-                <input name={this.props.idd+'[required]'} type='checkbox' defaultChecked='true' />
-                Обязательный вопрос?
-              </label>
-            </div>
-          </div>*/}
 
       </div>
     );

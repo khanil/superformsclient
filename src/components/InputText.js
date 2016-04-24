@@ -11,17 +11,20 @@ const InputText = ({
 }) => {
 
   const labelNode = label
-    ? <label htmlFor={field.name}>
+    ? <label htmlFor={field.name} className='control-label'>
         {label + ( (isRequired) ? '*' : '') }
       </label>
     : null;
 
   return (
-    <div className='form-group'>
+    <div className={ (!field.touched) ? 'form-group' : (field.invalid) ?  'form-group has-error' : 'form-group has-success'}>
       {labelNode}
-      <input {...field}
-      type='text' className='form-control' required={isRequired} />
-      {field.touched && field.error && <div>{field.error}</div>}
+      <input 
+        {...field}
+        type='text'
+        className='form-control'
+        required={isRequired} />
+      {field.touched && field.error && <div className='help-block'>{field.error}</div>}
     </div>
   );
 

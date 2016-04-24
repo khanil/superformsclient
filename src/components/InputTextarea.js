@@ -11,15 +11,16 @@ const InputTextarea = ({
 }) => {
 
   const labelNode = label
-    ? <label htmlFor={field.name}>
+    ? <label htmlFor={field.name} className='control-label'>
         {label + ( (isRequired) ? '*' : '') }
       </label>
     : null;
 
   return (
-    <div className='form-group'>
+    <div className={ (!field.touched) ? 'form-group' : (field.invalid) ?  'form-group has-error' : 'form-group has-success'}>
       {labelNode}
       <textarea {...field} className='form-control' rows='3' required={isRequired} />
+      {field.touched && field.error && <div className='help-block'>{field.error}</div>}
     </div>
   );
 

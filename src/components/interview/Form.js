@@ -3,7 +3,7 @@
  */
 
 import React, { PropTypes } from 'react';
-import { PARAGRAPH, SELECT } from './../../constants/questionTypes';
+import * as questionTypes from './../../constants/questionTypes';
 import InputText from './../../components/InputText';
 import InputTextarea from './../../components/InputTextarea';
 import InputSelect from './../../components/InputSelect';
@@ -16,19 +16,19 @@ import InputSelect from './../../components/InputSelect';
  */
 
 const Form = ({
-  fields : { answers, auth},
+  fields : { answers, auth },
   questions,
-  handleSubmit
+  handleSubmit,
+  submit
 }) => {
 
   return (
 
-    <form onSubmit={handleSubmit} method='POST' className='formGenerator'>
+    <form onSubmit={handleSubmit(submit)} method='POST' className='formGenerator'>
 
       <InputText
         field= {auth}
-        label= {'Ваше ФИО / Наименование организации'}
-        isRequired= {true} />
+        label= {'Ваше ФИО / Наименование организации'} />
 
       {
         answers.map(
@@ -36,31 +36,28 @@ const Form = ({
           (answer, index) => {
 
             let {
-              title,
-              required = true,
+              title
               type,
               options = null
             } = questions[index];
 
             switch (type) {
 
-              case PARAGRAPH :
+              case questionTypes.PARAGRAPH.value :
                 return (
                   <InputTextarea
                     key={index}
                     field={answer}
-                    label={title}
-                    isRequired={required ? 'true' : null} />
+                    label={title} />
                 );
 
-              case SELECT :
+              case questionTypes.LIST.value :
                 return (
                   <InputSelect
                     key={index}
                     field={answer}
                     label={title}
-                    options={options}
-                    isRequired={required ? 'true' : null} />
+                    options={options} />
                 );
 
               default :
@@ -68,8 +65,7 @@ const Form = ({
                   <InputText
                     key={index}
                     field={answer}
-                    label={title}
-                    isRequired={required ? 'true' : null} />
+                    label={title} />
                 );
 
             }
