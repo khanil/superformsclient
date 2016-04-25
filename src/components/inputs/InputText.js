@@ -1,10 +1,10 @@
 /*
- * Компонент содержит поле ввода абзаца текста
+ * Компонент содержит поле ввода строки текста
  */
 
 import React from 'react';
 
-const InputTextarea = ({
+const InputText = ({
   field,
   label,
   isRequired = false
@@ -19,11 +19,14 @@ const InputTextarea = ({
   return (
     <div className={ (!field.touched) ? 'form-group' : (field.invalid) ?  'form-group has-error' : 'form-group has-success'}>
       {labelNode}
-      <textarea {...field} className='form-control' rows='3' required={isRequired} />
+      <input 
+        {...field}
+        type='text'
+        className='form-control' />
       {field.touched && field.error && <div className='help-block'>{field.error}</div>}
     </div>
   );
 
 }
 
-export default InputTextarea;
+export default InputText;

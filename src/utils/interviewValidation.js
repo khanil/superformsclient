@@ -1,6 +1,8 @@
 import * as questionTypes from './../constants/questionTypes';
 import * as errorLabels from './../constants/errorLabels';
 
+// Все поля обязательны для заполнения
+
 const isEmpty = (value) => (
   value === undefined || value === null || value === ''
 );

@@ -28,10 +28,27 @@ class Interview extends Component {// eslint-disable-line no-undef
       alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
     } else {
       this.url = data.postUrl;
+      //Запрос шаблона формы с сервера
       this.props.fetchBoilerplateHandler(data.getUrl);
     }
 
   }
+
+  mySubmit = () => {
+
+    // values - объект значений формы
+    // url - адрес API на который отправляется форма
+    const values = this.props.values;
+    const url = this.url;
+
+    const str = JSON.stringify(values, '', 2);
+    console.log(str);
+
+    sendRequest('POST', url, str, function (xhr) {
+      console.log(xhr);
+    })
+    
+  };
 
   render() {
 
@@ -45,18 +62,7 @@ class Interview extends Component {// eslint-disable-line no-undef
       handleSubmit
     } = this.props;
 
-    const url = this.url;
-
-    const mySubmit = (values) => {
-
-      const str = JSON.stringify(values, '', 2);
-      console.log(str);
-
-      sendRequest('POST', url, str, function (xhr) {
-        console.log(xhr);
-      })
-      
-    };
+    const mySubmit = this.mySubmit;
 
     return (
       <div>

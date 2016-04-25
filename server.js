@@ -94,14 +94,14 @@ app.post('/api/forms', function(req, res) {
       process.exit(1);
     }
 
-    var comments = JSON.parse(data);
+    var boilerplate = JSON.parse(data);
     // NOTE: In a real implementation, we would likely rely on a database or
     // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
     // treat Date.now() as unique-enough for our purposes.
-    var newComment = req.body;
-    comments.push(newComment);
+    var newBoilerplate = req.body;
+    boilerplate.push(newBoilerplate);
 
-    fs.writeFile(FORMS_FILE, JSON.stringify(comments, null, 4), function(err) {
+    fs.writeFile(FORMS_FILE, JSON.stringify(boilerplate, null, 4), function(err) {
       if (err) {
         console.error(err);
         process.exit(1);

@@ -1,7 +1,7 @@
 import React from 'react';
 import Question from './Question';
 
-const QuestionsGeneration = ({
+const QuestionsContainer = ({
   questions
 }) => (
   <div className='questionList'>
@@ -12,6 +12,7 @@ const QuestionsGeneration = ({
       return (
       <Question
         key={index}
+        index={index}
         field={question}
         disabledBtn= {
           {
@@ -32,4 +33,4 @@ const QuestionsGeneration = ({
   </div>
 );
 
-export default QuestionsGeneration;
+export default QuestionsContainer;

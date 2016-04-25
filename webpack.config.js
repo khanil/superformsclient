@@ -5,17 +5,30 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 module.exports = {
 
-  entry: [
+   entry: ( NODE_ENV == 'production') ?
+  {
+    generation: ['babel-polyfill', './src/generation'],
+    interview: ['babel-polyfill', './src/interview'],
+    report: ['babel-polyfill', './src/report']
+  }
+  :
+  [
     'webpack-hot-middleware/client', // Для поддержки hot-reload
     'babel-polyfill',
     // './src/generation' //Генерация формы
-    // './src/interview' //Анкета
-    './src/report' //Отчет
+    './src/interview' //Анкета
+    // './src/report' //Отчет
   ],
 
-  output: {
+  output: ( NODE_ENV == 'production') ? 
+  {
     path: path.join(__dirname, 'dist/scripts'),
-    filename: 'report.js',
+    filename: '[name].js'
+  }
+  :
+  {
+    path: path.join(__dirname, 'dist/scripts'),
+    filename: 'home.js',
     publicPath: '/static/'
   },
 

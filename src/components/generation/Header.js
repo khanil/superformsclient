@@ -1,6 +1,6 @@
 import React from 'react';
-import InputText from './InputText';
-import InputTextarea from './InputTextarea';
+import InputText from './../inputs/InputText';
+import InputTextarea from './../inputs/InputTextarea';
 
 const Header = ({ 
   name,

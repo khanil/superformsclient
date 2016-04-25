@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import InputText from './InputText';
-import InputTextarea from './InputTextarea';
-import InputSelect from './InputSelect';
-import InputOption from './InputOption';
-import { ALL_TYPES_ARRAY } from './../constants/questionTypes';
+import InputText from './../inputs/InputText';
+import InputTextarea from './../inputs/InputTextarea';
+import InputSelect from './../inputs/InputSelect';
+import InputOption from './../inputs/InputOption';
+import { ALL_TYPES_ARRAY, LIST } from './../../constants/questionTypes';
 
 export default class Question extends Component {
 
@@ -11,13 +11,14 @@ export default class Question extends Component {
 
     const {
       field: { title, description, type, options },
+      index,
       disabledBtn,
       removeHandler,
       swapUpHandler,
       swapDownHandler
     } = this.props;
 
-    let flag = (type.value === 'Выбор из списка');
+    let flag = (type.value === LIST.value);
 
     let OptionsNode = options.map((option, index, options) => {
       return (
@@ -25,27 +26,27 @@ export default class Question extends Component {
        key= {index}
        label= {index + 1}
        field= {option}
-       isRequired= {true}
        removeHandler= {() => {options.removeField(index)}} />
     )})
 
     return (
       <div className='questionGenerator'>
 
-        <div className='btn-group question-conf-btn' role='group' aria-label='...'>
+        <span><b>{'# ' + (index + 1) }</b></span>
+        <div className='btn-group question-config-btn pull-right' role='group' aria-label='...'>
           <button 
             type='button' 
             className='btn btn-default'
             disabled={(disabledBtn.up) ? 'disabled' : null}
             onClick={swapUpHandler} >
-            <span className='glyphicon glyphicon-menu-up' aria-hidden='true'></span>
+            <span className='glyphicon glyphicon-arrow-up' aria-hidden='true'></span>
           </button>
           <button 
             type='button' 
             className='btn btn-default'
             disabled={(disabledBtn.down) ? 'disabled' : null}
             onClick={swapDownHandler} >
-            <span className='glyphicon glyphicon-menu-down' aria-hidden='true'></span>
+            <span className='glyphicon glyphicon-arrow-down' aria-hidden='true'></span>
           </button>
           <button 
             type='button' 
@@ -54,10 +55,11 @@ export default class Question extends Component {
             <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
           </button>
         </div>
+        <div className='clearfix'></div>
 
         <InputText
           label= 'Текст вопроса'
-          field= {title}
+          field= {title} 
           isRequired= {true} />
 
         <InputTextarea
@@ -67,8 +69,8 @@ export default class Question extends Component {
         <InputSelect
           label= 'Тип вопроса'
           field= {type}
-          isRequired= {true}
-          options= {ALL_TYPES_ARRAY} />
+          options= {ALL_TYPES_ARRAY}
+          isRequired= {true} />
 
         {
           (flag)

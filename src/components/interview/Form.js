@@ -4,9 +4,9 @@
 
 import React, { PropTypes } from 'react';
 import * as questionTypes from './../../constants/questionTypes';
-import InputText from './../../components/InputText';
-import InputTextarea from './../../components/InputTextarea';
-import InputSelect from './../../components/InputSelect';
+import InputText from './../../components/inputs/InputText';
+import InputTextarea from './../../components/inputs/InputTextarea';
+import InputSelect from './../../components/inputs/InputSelect';
 
 /*
   В компонент передаются:
@@ -28,7 +28,8 @@ const Form = ({
 
       <InputText
         field= {auth}
-        label= {'Ваше ФИО / Наименование организации'} />
+        label= {'Ваше ФИО / Наименование организации'} 
+        isRequired= {true} />
 
       {
         answers.map(
@@ -36,10 +37,12 @@ const Form = ({
           (answer, index) => {
 
             let {
-              title
+              title,
               type,
               options = null
             } = questions[index];
+
+            title = (index + 1) + '. ' + title;
 
             switch (type) {
 
@@ -48,7 +51,8 @@ const Form = ({
                   <InputTextarea
                     key={index}
                     field={answer}
-                    label={title} />
+                    label={title} 
+                    isRequired= {true} />
                 );
 
               case questionTypes.LIST.value :
@@ -57,7 +61,8 @@ const Form = ({
                     key={index}
                     field={answer}
                     label={title}
-                    options={options} />
+                    options={options} 
+                    isRequired= {true} />
                 );
 
               default :
@@ -65,7 +70,8 @@ const Form = ({
                   <InputText
                     key={index}
                     field={answer}
-                    label={title} />
+                    label={title} 
+                    isRequired= {true} />
                 );
 
             }

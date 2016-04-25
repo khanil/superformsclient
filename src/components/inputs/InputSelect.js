@@ -26,8 +26,7 @@ const InputSelect = ({
       {labelNode}
       <select 
         {...field}
-        className='form-control'
-        required={isRequired} >
+        className='form-control' >
 
         <option/>
 
