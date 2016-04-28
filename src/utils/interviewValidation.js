@@ -15,7 +15,7 @@ const validate = ( values, { questions } ) => {
   const errors = {};
   errors.answers = questions.map(() => (''));
 
-  console.log(auth);
+  // console.log(auth);
 
   if ( isEmpty(auth) ) {
     errors.auth = errorLabels.EMPTY;
@@ -23,7 +23,7 @@ const validate = ( values, { questions } ) => {
 
   answers.forEach( (answer, i) => {
 
-    console.log( i + '. ' + questions[ i ].type + ' : ' + answer);
+    // console.log( i + '. ' + questions[ i ].type + ' : ' + answer);
 
     if ( isEmpty(answer) ) {
       errors.answers[i] = errorLabels.EMPTY;

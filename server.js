@@ -140,6 +140,27 @@ app.post('/api/answers', function(req, res) {
   });
 });
 
+var ANSWER_FILE = path.join(__dirname, 'answer.json');
+
+app.get('/api/answers/form123', function(req, res) {
+
+  console.log('Get query to /api/answers/form123.');
+
+  fs.readFile(ANSWER_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var data = JSON.parse(data);
+
+    res.json(data);
+    console.log('Send response from /api/forms:');
+    console.log(data);
+  });
+});
+
+
 app.listen(port, function(error) {
   if (error) {
     console.log(error);

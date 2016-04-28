@@ -7,6 +7,8 @@ import * as questionTypes from './../../constants/questionTypes';
 import InputText from './../../components/inputs/InputText';
 import InputTextarea from './../../components/inputs/InputTextarea';
 import InputSelect from './../../components/inputs/InputSelect';
+import InputDate from './../../components/inputs/InputDate';
+import InputTime from './../../components/inputs/InputTime';
 
 /*
   В компонент передаются:
@@ -63,6 +65,24 @@ const Form = ({
                     label={title}
                     options={options} 
                     isRequired= {true} />
+                );
+
+              case questionTypes.DATE.value :
+                return (
+                  <InputDate
+                    key={index}
+                    field={answer}
+                    label={title}
+                    isRequired={true} />
+                );
+
+              case questionTypes.TIME.value :
+                return (
+                  <InputTime
+                    key={index}
+                    field={answer}
+                    label={title}
+                    isRequired={true} />
                 );
 
               default :

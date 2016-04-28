@@ -3,3 +3,8 @@ export const GET_FORM_VALUES = 'GET_FORM_VALUES';
 // Интервью
 export const REQUEST_BOILERPLATE = 'REQUEST_BOILERPLATE';
 export const RECEIVE_BOILERPLATE = 'RECEIVE_BOILERPLATE';
+
+//Отчет
+export const REQUEST_DATA = 'REQUEST_DATA';
+export const RECEIVE_DATA = 'RECEIVE_DATA';
+export const HEADER_BUILDED = 'HEADER_BUILDED';

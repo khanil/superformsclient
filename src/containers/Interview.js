@@ -5,7 +5,7 @@ import getDataFromNode from './../utils/getDataFromNode';
 import { fetchBoilerplate } from './../actions/actionsInterview';
 import Header from './../components/interview/Header';
 import Form from './../components/interview/Form';
-import validate from './../utils/interviewValidation'
+import validate from './../utils/interviewValidation';
 
 const fields = [
   'auth',
@@ -121,5 +121,6 @@ const mapDispatchToProps = (dispatch) => {
 export default reduxForm({
   form: 'interview',
   fields,
+  touchOnChange: true,
   validate
 }, mapStateToProps, mapDispatchToProps)(Interview);

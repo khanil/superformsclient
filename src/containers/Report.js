@@ -1,7 +1,23 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import getDataFromNode from './../utils/getDataFromNode';
+import { fetchData } from './../actions/actionsReport';
 
 class Report extends Component {
+
+  componentWillMount() {
+
+    let data = getDataFromNode('info', ['getUrl']);
+
+    if ( data.fatalError ) {
+      alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+    } else {
+      //Запрос шаблона формы с сервера
+      this.props.fetchDataHandler(data.getUrl);
+    }
+
+  }
 
   rows = [
     {
@@ -23,185 +39,91 @@ class Report extends Component {
 
   render() {
 
-    let boilerplate = {
-      questions: [
-            {
-                title: 'Предмет',
-                description: '',
-                type: 'Выбор из списка',
-                options: [
-                    'Математика',
-                    'Физика',
-                    'Биология',
-                    'Физкультура'
-                ]
-            },
-            {
-                title: 'Выделенные часы',
-                type: 'Строка',
-                options: []
-            },
-            {
-                title: 'Посещенные часы',
-                type: 'Строка',
-                options: []
-            },
-            {
-                title: 'Средний балл',
-                type: 'Строка',
-                options: []
-            },
-            {
-                title: 'Удовлетворенность предметом',
-                type: 'Выбор из списка',
-                options: [
-                    '5',
-                    '4',
-                    '3',
-                    '2',
-                    '1'
-                ]
-            }
-        ]
-    };
+    const {
+      isFetching,
+      header,
+      answers
+    } = this.props;
 
-    let headerColumnNames = [
-      {
-        id: '0',
-        name: 'ФИО'
-      }
-    ];
+    // let header = [
+    //   {
+    //     id: 'author',
+    //     name: 'ФИО'
+    //   }
+    // ];
 
-    let part = boilerplate.questions.map( (question, index) => {
-      return (
-        {
-          id: index + 1 + '',
-          name: question.title
-        }
-      );
-    });
+    // let headerFromBoilerplate = boilerplate.questions.map( (question) => {
+    //   return (
+    //     {
+    //       id: question.title,
+    //       name: question.title
+    //     }
+    //   );
+    // });
 
-    headerColumnNames = headerColumnNames.concat(part);
+    // header = header.concat(headerFromBoilerplate);
 
-    console.log(headerColumnNames);
+    console.log(header);
 
-    let answersData = [
-      {
-          auth: 'Иванов Иван Иванович',
-          answers: [
-              'Математика',
-              '122',
-              '100',
-              '4.5',
-              '5'
-          ]
-      },
-      {
-          auth: 'Дмитриев Дмитрий Дмитриевич',
-          answers: [
-              'Физика',
-              '140',
-              '45',
-              '3.4',
-              '2'
-          ]
-      },
-      {
-          auth: 'Олежко Олег Олегович',
-          answers: [
-              'Биология',
-              '12',
-              '12',
-              '5',
-              '5'
-          ]
-      },
-      {
-          auth: 'Алексеев Алексей Алексеевич',
-          answers: [
-              'Физкультура',
-              '95',
-              '87',
-              '4.6',
-              '1'
-          ]
-      },
-      {
-          auth: 'Мариева Мария Мариевна',
-          answers: [
-              'Физкультура',
-              '95',
-              '15',
-              '3',
-              '3'
-          ]
-      },
-      {
-          auth: 'Петров Петр Петрович',
-          answers: [
-              'Математика',
-              '124',
-              '124',
-              '5',
-              '5'
-          ]
-      },
-      {
-          auth: 'Сергеев Сергей Сергеевич',
-          answers: [
-              'Биология',
-              '110',
-              '23',
-              '3.9',
-              '2'
-          ]
-      },
-      {
-          auth: 'Валентинов Валентин Валентинович',
-          answers: [
-              'Физика',
-              '95',
-              '78',
-              '4.8',
-              '4'
-          ]
-      }
-    ];
-
-    let rowsTest = answersData.map( (answerData) => {
-
-      let res = {
-        0: answerData.auth
-      };
-
-      answerData.answers.forEach((answer, index) => {
-        res[index + 1] = answer;
-      });
-
-      return res;
-
-    });
-
-    console.log(rowsTest);
+    console.log(answers);
 
     return (
-      <BootstrapTable data={rowsTest} striped={true} hover={true}>
-        {
-          headerColumnNames.map( (obj, index) => (
-            <TableHeaderColumn
-              isKey={index === 0}
-              dataField={obj.id}
-              key={index}
-              width='300'
-              dataSort={true}>{obj.name}</TableHeaderColumn>
-          ))
-        }
+      <div>
 
-      </BootstrapTable>
+      { 
+        ( isFetching ) 
+
+        ?
+
+        <div className='loading-spinner-center'>
+          <i className='fa fa-spinner fa-spin fa-2x'></i>
+          <span>Загрузка</span>
+        </div>
+
+        :
+
+        <div>
+
+          <BootstrapTable data={answers} striped={true} hover={true}>
+            {
+              header.map( (obj, index) => (
+                <TableHeaderColumn
+                  isKey={index === 0}
+                  dataField={obj.id}
+                  key={index}
+                  width='300'
+                  dataSort={true}>{obj.name}</TableHeaderColumn>
+              ))
+            }
+          </BootstrapTable>
+
+        </div>
+      }
+      
+      </div>
     );
 
   }
 
 }
 
-export default Report;
+const mapStateToProps = (state) => {
+  return {
+    isFetching: state.report.isFetching,
+    header: state.report.header,
+    answers: state.report.answers
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchDataHandler: (url) => {
+      dispatch( fetchData(url) );
+    }
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Report);
