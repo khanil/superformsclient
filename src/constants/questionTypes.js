@@ -3,6 +3,8 @@
   Массив всех типов - ALL_TYPES_ARRAY
  */
 
+export const SEPARATOR = 'separator';
+
 export const INTEGER = {
   value: 'integer',
   label: 'Целое число'

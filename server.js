@@ -16,7 +16,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 
 var app = express();
-var port = 3000;
+var port = 4000;
 
 app.use('/', express.static(path.join(__dirname, 'dist')));
 app.use(bodyParser.json());
@@ -38,8 +38,12 @@ if (NODE_ENV == 'development') {
   app.use(webpackHotMiddleware(compiler));
 }
 
-app.get("/", function(req, res) {
+app.get("/home", function(req, res) {
   res.sendFile(__dirname + '/dist/views/index.html');
+});
+
+app.get("/", function(req, res) {
+  res.sendFile(__dirname + '/dist/views/main.html');
 });
 
 app.get("/signin", function(req, res) {
@@ -108,6 +112,23 @@ app.post('/api/forms', function(req, res) {
       }
       // res.json(comments);
     });
+  });
+});
+
+app.get('/api/forms/all', function(req, res) {
+
+  console.log('Get query to /api/forms/all.');
+
+  fs.readFile(FORMS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var data = JSON.parse(data);
+
+    res.json(data);
+    console.log('Send response from /api/forms:');
   });
 });
 

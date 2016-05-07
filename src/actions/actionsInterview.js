@@ -5,7 +5,6 @@ import {
   RECEIVE_BOILERPLATE
 } from './../constants/actionTypes';
 
-// eslint-disable-line no-undef
 export function requestBoilerplate() {
   return {
     type: REQUEST_BOILERPLATE

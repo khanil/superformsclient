@@ -35,6 +35,7 @@
     "babel-runtime": "^6.6.1",
     "moment": "^2.13.0",
     "react": "^15.0.1",
+    "react-bootstrap": "^0.29.3",
     "react-bootstrap-table": "^2.1.4",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.2",

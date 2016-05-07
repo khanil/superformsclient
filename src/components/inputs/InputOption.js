@@ -11,25 +11,15 @@ const InputOption = ({
   removeHandler
 }) => {
 
-  // const labelNode = label
-  //   ? <label 
-  //       htmlFor={field.name}
-  //       className='col-sm-2 control-label'>
-  //       {label}
-  //     </label>
-  //   : null;
-
   return (
-    <div className='form-group'>
-      <div className='input-group'>
-        <span className='input-group-addon'>{label}</span>
-        <input {...field} type='text' className='form-control' />
-        <span className='input-group-btn'>
-          <button className='btn btn-default' type='button' onClick={removeHandler}>
-            <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
-          </button>
-        </span>
-      </div>
+    <div className='input-group option-input'>
+      <span className='input-group-addon'>{label}</span>
+      <input {...field} type='text' className='form-control' />
+      <span className='input-group-btn'>
+        <button className='btn btn-default' type='button' onClick={removeHandler}>
+          <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
+        </button>
+      </span>
     </div>
   );
 

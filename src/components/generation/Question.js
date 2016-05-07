@@ -4,6 +4,7 @@ import InputTextarea from './../inputs/InputTextarea';
 import InputSelect from './../inputs/InputSelect';
 import InputOption from './../inputs/InputOption';
 import { ALL_TYPES_ARRAY, LIST } from './../../constants/questionTypes';
+import * as generationLabels from './../../labels/formGeneration';
 
 export default class Question extends Component {
 
@@ -15,18 +16,20 @@ export default class Question extends Component {
       disabledBtn,
       removeHandler,
       swapUpHandler,
-      swapDownHandler
+      swapDownHandler,
+      addCopy
     } = this.props;
 
     let flag = (type.value === LIST.value);
 
     let OptionsNode = options.map((option, index, options) => {
       return (
-      <InputOption
-       key= {index}
-       label= {index + 1}
-       field= {option}
-       removeHandler= {() => {options.removeField(index)}} />
+        <InputOption
+         key= {index}
+         label= {index + 1}
+         field= {option}
+         removeHandler= {() => {options.removeField(index)}}
+        />
     )})
 
     return (
@@ -51,6 +54,13 @@ export default class Question extends Component {
           <button 
             type='button' 
             className='btn btn-default'
+            onClick={addCopy}
+           >
+            <span className='glyphicon glyphicon-duplicate' aria-hidden='true'></span>
+          </button>
+          <button 
+            type='button' 
+            className='btn btn-default'
             onClick={removeHandler} >
             <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
           </button>
@@ -58,23 +68,29 @@ export default class Question extends Component {
         <div className='clearfix'></div>
 
         <InputText
-          label= 'Текст вопроса'
+          label= {generationLabels.QUESTION_NAME}
           field= {title} 
-          isRequired= {true} />
+          isRequired= {true}
+        />
 
         <InputTextarea
-          label= 'Описание вопроса'
-          field= {description} />
+          label= {generationLabels.QUESTION_DESCRIPTION}
+          field= {description}
+        />
 
         <InputSelect
-          label= 'Тип вопроса'
+          label= {generationLabels.ANSWER_TYPE}
           field= {type}
           options= {ALL_TYPES_ARRAY}
-          isRequired= {true} />
+          isRequired= {true}
+        />
 
         {
           (flag)
-          ? OptionsNode
+          ? 
+          <div className='form-group'>
+            {OptionsNode}
+          </div>
           : null
         }
 

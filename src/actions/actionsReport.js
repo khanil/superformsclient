@@ -3,11 +3,14 @@ import sendRequest from '../utils/sendRequest';
 import {
   REQUEST_DATA,
   RECEIVE_DATA,
-  HEADER_BUILDED
+  HEADER_BUILDED,
+  SHOW_GENERATION,
+  HIDE_GENERATION,
+  TOGGLE_DESCRIPTION
 } from './../constants/actionTypes';
 
 // eslint-disable-line no-undef
-export function requestData() {
+function requestData() {
   return {
     type: REQUEST_DATA
   }
@@ -38,25 +41,51 @@ export function fetchData(url) {
 
       console.log(JSON.parse(xhr.responseText));
 
-      let header = [
-        {
-          id: 'Автор',
-          name: 'ФИО'
-        }
-      ];
+      const header = {
+        'Автор' : 'string'
+      }
 
-      let headerFromBoilerplate = JSON.parse(xhr.responseText).form.questions.map( (question) => {
-        return (
-          {
-            id: question.title,
-            name: question.title
-          }
-        );
+      // let header = [
+      //   {
+      //     id: 'Автор',
+      //     title: 'ФИО'
+      //   }
+      // ];
+
+      JSON.parse(xhr.responseText).form.questions.forEach( (question) => {
+        header[question.title] = question.type;
       });
 
-      header = header.concat(headerFromBoilerplate);
+      // let headerFromBoilerplate = JSON.parse(xhr.responseText).form.questions.map( (question) => {
+      //   return (
+      //     {
+      //       id: question.title,
+      //       title: question.title
+      //     }
+      //   );
+      // });
+
+      // header = header.concat(headerFromBoilerplate);
 
       dispatch(recieveHeader(header));
     });
+  }
+}
+
+export function showReportGeneration() {
+  return {
+    type: SHOW_GENERATION
+  }
+}
+
+export function hideReportGeneration() {
+  return {
+    type: HIDE_GENERATION
+  }
+}
+
+export function toggleDescription() {
+  return {
+    type: TOGGLE_DESCRIPTION
   }
 }

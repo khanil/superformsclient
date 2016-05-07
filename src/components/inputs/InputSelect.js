@@ -57,17 +57,3 @@ const InputSelect = ({
 }
 
 export default InputSelect;
-
-{/*<div className='form-group'>
-            <label>Тип ответа</label> 
-            <select name={this.props.idd+'[questionType]'} 
-              className='form-control' 
-              required='required' 
-              defaultValue='string'
-              onChange={this.changeHandler}>
-              <option value='string'>Строка</option>
-              <option value='paragraph'>Абзац</option>
-              <option value='datetime'>Дата/Время</option>
-              <option value='select'>Выбор из списка</option>
-            </select>
-          </div>*/}

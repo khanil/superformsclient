@@ -7,22 +7,24 @@ module.exports = {
 
    entry: ( NODE_ENV == 'production') ?
   {
-    generation: ['babel-polyfill', './src/generation'],
-    interview: ['babel-polyfill', './src/interview'],
-    report: ['babel-polyfill', './src/report']
+    generation: ['babel-polyfill', './src/entries/generation'],
+    interview: ['babel-polyfill', './src/entries/interview'],
+    report: ['babel-polyfill', './src/entries/report'],
+    main: ['babel-polyfill', './src/entries/main']
   }
   :
   [
     'webpack-hot-middleware/client', // Для поддержки hot-reload
     'babel-polyfill',
-    // './src/generation' //Генерация формы
-    // './src/interview' //Анкета
-    './src/report' //Отчет
+    // './src/entries/generation' //Генерация формы
+    // './src/entries/interview' //Анкета
+    // './src/entries/report' //Отчет
+    './src/entries/main' //Главная страница ( список всех форм)
   ],
 
   output: ( NODE_ENV == 'production') ? 
   {
-    path: path.join(__dirname, 'dist/scripts'),
+    path: path.join(__dirname, 'dist/scripts/min'),
     filename: '[name].js'
   }
   :
@@ -32,7 +34,7 @@ module.exports = {
     publicPath: '/static/'
   },
 
-  devtool: NODE_ENV == 'development' ? 'cheap-module-eval-source-map' : null,
+  devtool: NODE_ENV == 'development' ? '#cheap-module-eval-source-map' : null,
 
   plugins: [
     new webpack.EnvironmentPlugin([

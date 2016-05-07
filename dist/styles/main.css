@@ -27,6 +27,10 @@
   margin-bottom: 5px;
 }
 
+.option-input {
+  margin-bottom: 10px;
+}
+
 .loading-spinner-center {
   width: 120px;
   position: absolute;
@@ -57,4 +61,71 @@
 
 button[type="submit"] {
   margin-bottom: 30px;
+}
+
+table .form-group {
+  margin: 0;
+}
+
+.react-bs-table-container {
+  margin-bottom: 15px;
+}
+
+.th-btn {
+  width: 140px;
+}
+
+/*.report-generation-container {
+  height: 250px;
+   overflow: auto;
+}*/
+
+.report-header {
+  position: relative;
+}
+
+.description-toggle-btn {
+  position: absolute;
+  right: -10px;
+  top: 0;
+}
+
+/*Список всех форм*/
+.forms-list td {
+  vertical-align: middle !important;
+}
+
+.forms-list thead tr th:last-child,
+.forms-list tbody tr td:last-child {
+  width: 220px;
+}
+
+.operations-btns {
+  float: right;
+}
+
+.forms-list tbody tr {
+  cursor: pointer;
+}
+
+.send-method-container label,
+.send-method-container ul {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.send-method-container label {
+  margin-right: 15px;
+}
+
+.send-method-container li {
+  margin-right: 10px;
+}
+
+.send-form-modal blockquote {
+  font-size: 14px;
+}
+
+.copy-form-modal button[type="submit"] {
+  margin-bottom: 0;
 }

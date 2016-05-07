@@ -3,12 +3,12 @@ import Header from './Header';
 import QuestionsContainer from './QuestionsContainer';
 
 const Form = ({ 
-  fields: { name, description, questions },
+  fields: { name, description, type, questions },
   handleSubmit,
   submit
 }) => (
   <form onSubmit={handleSubmit(submit)} method='POST' className='formGenerator'>
-    <Header name={name} description={description} />
+    <Header name={name} description={description} type={type} />
     <QuestionsContainer questions={questions} />
     <button type='submit' className='btn btn-primary btn-block'>Сохранить</button>
   </form>

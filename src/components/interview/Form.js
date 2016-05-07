@@ -18,86 +18,84 @@ import InputTime from './../../components/inputs/InputTime';
  */
 
 const Form = ({
-  fields : { answers, auth },
+  fields,
   questions,
   handleSubmit,
   submit
 }) => {
+
+  const renderQuestions = () => (
+    questions.map(
+      (question, index) => {
+
+        let { title, type, options = null } = question;
+
+        //Добавление нумерации вопросов
+        let label = (index + 1) + '. ' + title;
+
+        switch (type) {
+
+          case questionTypes.PARAGRAPH.value :
+            return (
+              <InputTextarea
+                key={index}
+                field={fields[title]}
+                label={label} 
+                isRequired= {true} />
+            );
+
+          case questionTypes.LIST.value :
+            return (
+              <InputSelect
+                key={index}
+                field={fields[title]}
+                label={label}
+                options={options} 
+                isRequired= {true} />
+            );
+
+          case questionTypes.DATE.value :
+            return (
+              <InputDate
+                key={index}
+                field={fields[title]}
+                label={label}
+                isRequired={true} />
+            );
+
+          case questionTypes.TIME.value :
+            return (
+              <InputTime
+                key={index}
+                field={fields[title]}
+                label={label}
+                isRequired={true} />
+            );
+
+          default :
+            return (
+              <InputText
+                key={index}
+                field={fields[title]}
+                label={label} 
+                isRequired= {true} />
+            );
+
+        }
+      }
+    )
+  )
 
   return (
 
     <form onSubmit={handleSubmit(submit)} method='POST' className='formGenerator'>
 
       <InputText
-        field= {auth}
+        field= {fields['Автор']}
         label= {'Ваше ФИО / Наименование организации'} 
         isRequired= {true} />
 
-      {
-        answers.map(
-
-          (answer, index) => {
-
-            let {
-              title,
-              type,
-              options = null
-            } = questions[index];
-
-            title = (index + 1) + '. ' + title;
-
-            switch (type) {
-
-              case questionTypes.PARAGRAPH.value :
-                return (
-                  <InputTextarea
-                    key={index}
-                    field={answer}
-                    label={title} 
-                    isRequired= {true} />
-                );
-
-              case questionTypes.LIST.value :
-                return (
-                  <InputSelect
-                    key={index}
-                    field={answer}
-                    label={title}
-                    options={options} 
-                    isRequired= {true} />
-                );
-
-              case questionTypes.DATE.value :
-                return (
-                  <InputDate
-                    key={index}
-                    field={answer}
-                    label={title}
-                    isRequired={true} />
-                );
-
-              case questionTypes.TIME.value :
-                return (
-                  <InputTime
-                    key={index}
-                    field={answer}
-                    label={title}
-                    isRequired={true} />
-                );
-
-              default :
-                return (
-                  <InputText
-                    key={index}
-                    field={answer}
-                    label={title} 
-                    isRequired= {true} />
-                );
-
-            }
-          }
-        )
-      }
+      {renderQuestions()}
 
       <button type='submit' className='btn btn-primary btn-block'>Отправить</button>
 

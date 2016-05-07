@@ -9,6 +9,7 @@ import Form from './../components/generation/Form';
 const fields = [
   'name',
   'description',
+  'type',
   'questions[].title',
   'questions[].description',
   'questions[].type',
@@ -19,7 +20,7 @@ class FormGeneration extends Component {
 
   /*
     URL на который отправляется результат заполнения формы считывается из
-    разметки, в элементе с id "info"
+    разметки, в элементе с id 'info'
    */
   url;
 
@@ -85,7 +86,6 @@ class FormGeneration extends Component {
   }
   
 }
-
 
 export default reduxForm({
   form: 'generation',

@@ -1,5 +1,5 @@
 import { LIST } from './../constants/questionTypes';
-import * as errorLabels from './../constants/errorLabels';
+import * as errorLabels from './../labels/validationErrors';
 
 const isEmpty = (value) => (
   value === undefined || value === null || value === ''
@@ -8,6 +8,7 @@ const isEmpty = (value) => (
 const validate = ( 
   {
     name,
+    type,
     //description,
     questions // [] of { title, description, type, options }
   }
@@ -18,6 +19,10 @@ const validate = (
 
   if ( isEmpty(name) ) {
     errors.name = errorLabels.EMPTY;
+  }
+
+  if ( isEmpty(type) ) {
+    errors.type = errorLabels.EMPTY;
   }
 
   questions.forEach( (question, i) => {

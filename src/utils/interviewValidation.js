@@ -1,5 +1,5 @@
 import * as questionTypes from './../constants/questionTypes';
-import * as errorLabels from './../constants/errorLabels';
+import * as errorLabels from './../labels/validationErrors';
 
 // Все поля обязательны для заполнения
 
@@ -8,46 +8,43 @@ const isEmpty = (value) => (
 );
 
 const validate = ( values, { questions } ) => {
-  const answers = values.answers;
-  const auth = values.auth;
-
-  //Инициализируем объект содержащий ошибки
   const errors = {};
-  errors.answers = questions.map(() => (''));
 
-  // console.log(auth);
-
-  if ( isEmpty(auth) ) {
-    errors.auth = errorLabels.EMPTY;
+  if ( isEmpty(values['Автор']) ) {
+    errors['Автор'] = errorLabels.EMPTY;
   }
 
-  answers.forEach( (answer, i) => {
+  questions.forEach( (question) => {
 
-    // console.log( i + '. ' + questions[ i ].type + ' : ' + answer);
+    let title = question.title;
 
-    if ( isEmpty(answer) ) {
-      errors.answers[i] = errorLabels.EMPTY;
+    if ( isEmpty(values[title]) ) {
+      errors[title] = errorLabels.EMPTY;
+      return;
     }
 
-    switch ( questions[ i ].type ) {
+    let type = question.type;
+    let value = values[title];
+
+    switch (type) {
 
       case questionTypes.FLOAT.value:
         // Делитель точка или запятая, неограниченное кол-во знаков после делителя
-        if ( !(/^[0-9]+[.,][0-9]+$/).test(answer) ) {
-          errors.answers[i] = errorLabels.FLOAT;
+        if ( !(/^[0-9]+[.,][0-9]+$/).test(value) ) {
+          errors[title] = errorLabels.FLOAT;
         }
         break;
 
       case questionTypes.INTEGER.value:
-        if ( !(/^[0-9]+$/).test(answer) ) {
-          errors.answers[i] = errorLabels.INTEGER;
+        if ( !(/^[0-9]+$/).test(value) ) {
+          errors[title] = errorLabels.INTEGER;
         }
         break;
 
       case questionTypes.FINANCIAL.value:
         // Делитель точка или запятая, два знака после запятой
-        if ( !(/^[0-9]+[.,][0-9][0-9]$/).test(answer) ) {
-          errors.answers[i] = errorLabels.FINANCIAL;
+        if ( !(/^[0-9]+[.,][0-9][0-9]$/).test(value) ) {
+          errors[title] = errorLabels.FINANCIAL;
         }
         break;
 

@@ -2,7 +2,10 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import getDataFromNode from './../utils/getDataFromNode';
-import { fetchData } from './../actions/actionsReport';
+import { fetchData, showReportGeneration, hideReportGeneration, toggleDescription } from './../actions/actionsReport';
+import ReportGeneration from './ReportGeneration';
+import LoadingSpinner from './../components/widgets/LoadingSpinner';
+import { INTEGER, FLOAT } from './../constants/questionTypes';
 
 class Report extends Component {
 
@@ -19,53 +22,54 @@ class Report extends Component {
 
   }
 
-  rows = [
-    {
-        id: 1,
-        name: 'Product1',
-        price: 120,
-        x: 100,
-        y: 12,
-        z: 'OLOLOL'
-    },{
-        id: 2,
-        name: 'Product2',
-        price: 80,
-        x: 100,
-        y: 12,
-        z: 'OLOLOL'
-    }
-  ];
+  isColumnTypeNumber(type) {
+    return ( type === INTEGER.value || type === FLOAT.value);
+  }
 
   render() {
 
     const {
+      isDescriptionVisible,
       isFetching,
+      isGenerationVisible,
       header,
-      answers
+      answers,
+      formTitle,
+      formDescription,
+      toggleDescriptionHandler,
+      showGenerationHandler,
+      hideGenerationHandler
     } = this.props;
 
-    // let header = [
-    //   {
-    //     id: 'author',
-    //     name: 'ФИО'
-    //   }
-    // ];
+    const isColumnTypeNumber = this.isColumnTypeNumber.bind(this);
 
-    // let headerFromBoilerplate = boilerplate.questions.map( (question) => {
-    //   return (
-    //     {
-    //       id: question.title,
-    //       name: question.title
-    //     }
-    //   );
-    // });
+    const numberSort = (a, b, order, sortField) => {
+      if ( order === 'desc' ) {
+        return b[sortField] - a[sortField];
+      } else {
+        return a[sortField] - b[sortField];
+      }
+    }
 
-    // header = header.concat(headerFromBoilerplate);
+    const renderTableColumns = () => {
+      const TableColumns = [];
 
-    console.log(header);
+      for ( let key in header) {
+        TableColumns.push(
+          <TableHeaderColumn
+            isKey={key === 'Автор'}
+            dataField={key}
+            key={key}
+            dataSort={true}
+            sortFunc={(isColumnTypeNumber(header[key]) ? numberSort : null)}
+          >
+            {key}
+          </TableHeaderColumn>
+        );
+      }
 
-    console.log(answers);
+      return TableColumns;
+    }
 
     return (
       <div>
@@ -75,27 +79,52 @@ class Report extends Component {
 
         ?
 
-        <div className='loading-spinner-center'>
-          <i className='fa fa-spinner fa-spin fa-2x'></i>
-          <span>Загрузка</span>
-        </div>
+        <LoadingSpinner />
 
         :
 
         <div>
 
-          <BootstrapTable data={answers} striped={true} hover={true}>
+          <div className='report-header'>
+            <h1>{formTitle}</h1>
+
             {
-              header.map( (obj, index) => (
-                <TableHeaderColumn
-                  isKey={index === 0}
-                  dataField={obj.id}
-                  key={index}
-                  width='300'
-                  dataSort={true}>{obj.name}</TableHeaderColumn>
-              ))
+              (formDescription !== undefined && formDescription !== '') ?
+              <button type='button' className='btn btn-default btn-xs description-toggle-btn' onClick={toggleDescriptionHandler}>
+                <span className='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
+              </button> :
+              null
             }
+
+            {
+              (isDescriptionVisible) ?
+              <blockquote>{formDescription}</blockquote> :
+              null
+            }
+          </div>
+
+          <BootstrapTable 
+            data={answers}
+            striped={true}
+            hover={true}
+            height={(!isGenerationVisible) ? '500' : '300'}
+          >
+            { renderTableColumns() }
           </BootstrapTable>
+
+          {
+            ( isGenerationVisible )
+          
+            ?
+
+            <ReportGeneration
+              header={header}
+              hideGenerationHandler={hideGenerationHandler}
+            />
+
+            :
+            <button type='button' className='btn btn-default' onClick={showGenerationHandler}>Создать отчет</button>
+          }
 
         </div>
       }
@@ -109,9 +138,13 @@ class Report extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    isDescriptionVisible: state.report.isDescriptionVisible,
     isFetching: state.report.isFetching,
+    isGenerationVisible: state.report.isGenerationVisible,
     header: state.report.header,
-    answers: state.report.answers
+    answers: state.report.answers,
+    formTitle: state.report.boilerplate.name,
+    formDescription: state.report.boilerplate.description
   }
 }
 
@@ -119,6 +152,15 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchDataHandler: (url) => {
       dispatch( fetchData(url) );
+    },
+    showGenerationHandler: () => {
+      dispatch( showReportGeneration() );
+    },
+    hideGenerationHandler: () => {
+      dispatch( hideReportGeneration() );
+    },
+    toggleDescriptionHandler: () => {
+      dispatch( toggleDescription() );
     }
   }
 }
