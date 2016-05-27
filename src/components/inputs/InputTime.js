@@ -29,7 +29,7 @@ const InputTime = ({
       <DateTimePicker
         format='HH:mm'
         calendar={false}
-        defaultValue={null}
+        value={(field.value) ? Moment(field.value).toDate() : null}
         onChange={field.onChange}
       />
       {field.touched && field.error && <div className='help-block'>{field.error}</div>}

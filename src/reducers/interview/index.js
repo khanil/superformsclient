@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux';
-import interview from './interview';
+import page from './page';
+import boilerplate from './boilerplate';
+import responce from './responce';
 import { reducer as formReducer } from 'redux-form';
 
 export default combineReducers({
-  interview,
+  page,
+  boilerplate,
+  responce,
   form: formReducer
 });

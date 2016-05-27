@@ -1,22 +1,73 @@
-import React, {Component} from 'react';
-import { reduxForm } from 'redux-form';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import getDataFromNode from './../utils/getDataFromNode';
+import { fetchBoilerplate, fetchResponce, setPageType } from './../actions/actionsInterview';
+import InterviewForm from './../components/interview/InterviewForm';
+import Header from './../components/interview/Header';
+import LoadingSpinner from './../components/widgets/LoadingSpinner';
 import sendRequest from './../utils/sendRequest';
-import Form from './../components/interview/Form';
-import validate from './../utils/interviewValidation';
+import {getValues} from 'redux-form';
+import { ANSWER_REVIEW, INTERVIEW_FORM } from './../constants/interviewPageTypes';//PREVIEW_FORM, 
 
-// const fields = [
-//   'auth',
-//   'answers[]'
-// ];
 
 class Interview extends Component {
 
-  mySubmit = () => {
+  /*
+    URL на который отправляется результат заполнения формы считывается из
+    разметки, в элементе с id 'info'
+   */
+  url;
+
+  componentWillMount() {
+
+    let data = getDataFromNode('info', ['type', 'getUrl']);
+
+    if ( data.fatalError ) {
+      alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+    } else {
+      this.props.setPageTypeHandler(data.type);
+
+      if (data.type === INTERVIEW_FORM) {
+        document.body.classList.add('no-header');
+
+        let additionalData = getDataFromNode('info', ['postUrl']);
+
+        if (additionalData.fatalError) {
+          alert('Не указан postUrl. Пожалуйста свяжитесь с техподдержкой.');
+          return;
+        } else {
+          //Запрос ответа на форму с сервера
+          this.url = additionalData.postUrl;
+        }
+      }
+
+      //Запрос шаблона формы с сервера
+      this.props.fetchBoilerplateHandler(data.getUrl);
+
+      if (data.type === ANSWER_REVIEW) {
+        let additionalData = getDataFromNode('info', ['responseUrl']);
+
+        if (additionalData.fatalError) {
+          alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+        } else {
+          //Запрос ответа на форму с сервера
+          this.props.fetchResponceHandler(additionalData.responseUrl);
+        }
+      }
+    }
+
+  }
+
+  handleSubmit = () => {
+    this.refs.interviewForm.submit();
+  }
+
+  submitResponces = () => {
 
     // values - объект значений формы
     // url - адрес API на который отправляется форма
-    const values = this.props.values;
-    const url = this.props.url;
+    const values = this.props.formValues;
+    const url = this.url;
 
     const str = JSON.stringify(values, '', 2);
     console.log(str);
@@ -24,29 +75,55 @@ class Interview extends Component {
     sendRequest('POST', url, str, function (xhr) {
       console.log(xhr);
     })
-    
   };
 
   render() {
 
     const {
       fields,
+      name,
+      description,
       questions,
-      handleSubmit
+      isFetching,
+      pageType,
+      initialValues
     } = this.props;
-
-    const mySubmit= this.mySubmit;
 
     return (
       <div>
+      {
+        (isFetching) ?
+        <LoadingSpinner /> :
+        <div>
+          <Header
+            name={name}
+            description={description}
+          />
 
-        <Form
-          fields={fields}
-          questions={questions}
-          handleSubmit={handleSubmit}
-          submit={mySubmit}
-        />
+          <InterviewForm
+            ref='interviewForm'
+            fields={fields}
+            questions={questions}
+            initialValues={initialValues}
+            onSubmit={this.submitResponces}
+            readonly={(pageType === ANSWER_REVIEW) ? true : false}
+          />
 
+          {
+            //Активировать отправку формы на сервер в случае если страница
+            //отрабатывает сценарий заполнения опроса
+            (pageType === INTERVIEW_FORM) ?
+            <button
+              type='submit'
+              className='btn btn-primary btn-block'
+              onClick={this.handleSubmit}
+            >
+              Отправить
+            </button> :
+            null
+          }
+        </div>
+      }
       </div>
     );
 
@@ -54,8 +131,34 @@ class Interview extends Component {
 
 }
 
-export default reduxForm({
-  form: 'interview',
-  touchOnChange: true,
-  validate
-})(Interview);
+const mapStateToProps = (state) => {
+  return {
+    isFetching: state.page.isFetching,
+    questions: state.boilerplate.questions,
+    name: state.boilerplate.name,
+    description: state.boilerplate.description,
+    formValues: getValues(state.form.interview),
+    pageType: state.page.type,
+    fields: ['Автор'].concat(state.boilerplate.questions.map( ( question ) => ( question.title) )),
+    initialValues: state.responce.answers
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchBoilerplateHandler: (url) => {
+      dispatch( fetchBoilerplate(url) );
+    },
+    fetchResponceHandler: (url) => {
+      dispatch( fetchResponce(url) );
+    },
+    setPageTypeHandler: (type) => {
+      dispatch( setPageType(type) );
+    }
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Interview)

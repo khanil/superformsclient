@@ -2,6 +2,64 @@
   margin: 0;
 }
 
+body {
+  padding-top: 100px;
+}
+
+body.no-header {
+  padding-top: 0;
+}
+
+#header-root {
+  margin-top: -3px;
+}
+
+#page-header {
+  height: 80px;
+}
+
+#page-header .container {
+  margin-top: 25px;
+}
+
+.page-header-return {
+  font-size: 18px;
+}
+
+.page-header-return i {
+  margin-right: 5px;
+}
+
+.page-header-info {
+  margin-top: -2px;
+}
+
+.page-header-info p {
+  margin: 0;
+}
+
+.page-header-save {
+  font-size: 12px;
+}
+
+.page-header-status {
+}
+
+
+.page-header-btns {
+  
+}
+
+.page-header-btns .btn-group {
+  margin-right: 15px;
+}
+
+@media (max-width: 992px) {
+  #page-header {
+    height: 130px;
+  }
+}
+
 #root {
   margin-top: 30px;
 }

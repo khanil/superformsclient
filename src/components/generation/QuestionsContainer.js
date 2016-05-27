@@ -8,27 +8,29 @@ const QuestionsContainer = ({
 
   {
     questions.map((question, index, questions) => {
+      let questionValues = {
+        title: question.title.value,
+        description: question.description.value,
+        type: question.type.value,
+        options: question.options.map( (option) => (option.value) )
+      }
+
       return (
         <Question
           key={index}
           index={index}
           field={question}
-          disabledBtn= {
+          disabledBtns= {
             {
+              remove: (questions.length === 1),
               up: (index === 0),
               down: (index === questions.length - 1)
             }
           }
-          removeHandler={() => {questions.removeField(index)}}
-          swapUpHandler={() => {
-            questions.swapFields(index, index - 1)}}
-          swapDownHandler={() => {questions.swapFields(index, index + 1)}}
-          addCopy={() => {questions.addField( {
-            title: question.title.value,
-            description: question.description.value,
-            type: question.type.value,
-            options: question.options.map( (option) => (option.value) )
-          } ,index + 1)}}
+          removeHandler={ () => { questions.removeField(index) } }
+          swapUpHandler={ () => { questions.swapFields(index, index - 1) } }
+          swapDownHandler={ () => { questions.swapFields(index, index + 1) } }
+          addCopyHandler={ () => { questions.addField( questionValues ,index + 1) } }
         />
     )})
   }

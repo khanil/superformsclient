@@ -118,7 +118,8 @@ class CopyFormModal extends Component {
 
 CopyFormModal.propTypes = {
   hideHandler: PropTypes.func.isRequired,
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
+  successFunc: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -126,20 +127,21 @@ const mapStateToProps = (state) => {
     formId: state.copyModal.formId,
     isCopied: state.copyModal.isCopied,
     isCopying: state.copyModal.isCopying,
-    copyError: state.copyModal.copyError,
-    initialValues: {
-      name: state.formsList.forms.filter((form) => (form.id === state.copyModal.formId))[0].name + ' копия'
-    }
+    copyError: state.copyModal.copyError
+    // initialValues: {
+    //   name: state.formsList.forms.filter((form) => (form.id === state.copyModal.formId))[0].name + ' копия'
+    // }
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     copyFormHandler: () => {
       dispatch( copyForm() )
     },
     copySuccessHandler: () => {
-      dispatch( copySuccess() )
+      dispatch( copySuccess() );
+      ownProps.successFunc();
     },
     copyFailHandler: (error) => {
       dispatch( copyFailed(error) )

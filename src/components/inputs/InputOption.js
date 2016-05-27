@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 const InputOption = ({
   field,
@@ -16,9 +17,14 @@ const InputOption = ({
       <span className='input-group-addon'>{label}</span>
       <input {...field} type='text' className='form-control' />
       <span className='input-group-btn'>
-        <button className='btn btn-default' type='button' onClick={removeHandler}>
-          <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
-        </button>
+        <OverlayTrigger
+          placement='top'
+          overlay={<Tooltip>Удалить вариант</Tooltip>}
+        >
+          <button className='btn btn-default' type='button' onClick={removeHandler}>
+            <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
+          </button>
+        </OverlayTrigger>
       </span>
     </div>
   );

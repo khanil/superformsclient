@@ -95,6 +95,7 @@ class FormsList extends Component {
           <SendFormModal
             hideHandler={hideSendModalHandler}
             url={urls.sendUrl}
+            successFunc={() => {this.props.fetchFormsHandler(urls.getUrl)}}
           /> :
           null
         }
@@ -104,6 +105,7 @@ class FormsList extends Component {
           <CopyFormModal
             hideHandler={toggleCopyModalHandler}
             url={urls.copyUrl}
+            successFunc={() => {this.props.fetchFormsHandler(urls.getUrl)}}
           /> :
           null
         }
@@ -113,6 +115,7 @@ class FormsList extends Component {
           <DeleteFormModal
             hideHandler={hideDeleteModalHandler}
             url={urls.deleteUrl}
+            successFunc={() => {this.props.fetchFormsHandler(urls.getUrl)}}
           /> :
           null
         }

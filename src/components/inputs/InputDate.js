@@ -6,9 +6,9 @@ import React from 'react';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import Moment from 'moment';
 Moment.locale('ru');
-import momentLocalizer from 'react-widgets/lib/localizers/moment';
+import MomentLocalizer from 'react-widgets/lib/localizers/moment';
 
-momentLocalizer(Moment);
+MomentLocalizer(Moment);
 
 const InputDate = ({
   field,
@@ -29,7 +29,7 @@ const InputDate = ({
         format='DD MMM YYYY'
         editFormat='DD/MM/YY'
         time={false}
-        defaultValue={null}
+        value={(field.value) ? Moment(field.value).toDate() : null}
         onChange={field.onChange}
       />
       {field.touched && field.error && <div className='help-block'>{field.error}</div>}

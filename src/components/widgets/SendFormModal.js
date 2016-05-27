@@ -42,15 +42,9 @@ class SendFormModal extends Component {
     this.props.sendFormHandler();
     const id = this.props.formId;
 
-    const values = {
-      formId: id
-    };
-
-    const str = JSON.stringify(values , '', 2);
-
     const adds = this.props.url.replace('id', id);
 
-    sendRequest('POST', adds, str, this.props.sendSuccessHandler, this.props.sendFailHandler);
+    sendRequest('POST', adds, null, this.props.sendSuccessHandler, this.props.sendFailHandler);
   }
 
   render() {
@@ -177,7 +171,8 @@ class SendFormModal extends Component {
 
 SendFormModal.propTypes = {
   hideHandler: PropTypes.func.isRequired,
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
+  successFunc: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -191,7 +186,7 @@ const mapStateToProps = (state) => {
   }
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     changeSendMethodHandler: (method) => {
       dispatch( changeSendMethod(method) )
@@ -200,7 +195,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch( sendForm() )
     },
     sendSuccessHandler: () => {
-      dispatch( sendingSuccess() )
+      dispatch( sendingSuccess() );
+      ownProps.successFunc();
     },
     sendFailHandler: (error) => {
       dispatch( sendingFailed(error) )

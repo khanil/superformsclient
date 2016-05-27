@@ -14,15 +14,24 @@ function getDataFromNode(id, fields) {
 
     info = JSON.parse(info.innerHTML);
 
-    fields.forEach( (field) => {
-      if (info[field] === undefined) {
-        console.error('Не предоставлено запрошенное поле ' + field + '.');
-        res.fatalError = true;
-        return res;
+    if (fields === 'ALL') {
+
+      for (let key in info) {
+        res[key] = info[key];
       }
 
-      res[field] = info[field];
-    });
+    } else {
+
+      fields.forEach( (field) => {
+        if (info[field] === undefined) {
+          console.error('Не предоставлено запрошенное поле ' + field + '.');
+          res.fatalError = true;
+          return res;
+        }
+
+        res[field] = info[field];
+      });
+    }
 
   } catch(e) {
     res.fatalError = true;

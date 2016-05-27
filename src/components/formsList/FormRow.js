@@ -48,7 +48,7 @@ class FormRow extends Component {
 
     var adds = this.props.urls.editUrl.replace('id', id);
 
-    window.open(window.location.origin + adds, '_blank');
+    document.location.pathname = adds;
   }
 
   render() {

@@ -29,7 +29,7 @@ const InputDate = ({
       {labelNode}
       <DateTimePicker
         format='DD MMM YYYY, HH:mm'
-        defaultValue={null}
+        value={(field.value) ? Moment(field.value).toDate() : null}
         onChange={field.onChange}
         min={min ? min : new Date(1900, 0, 1)}
         max={max ? max : new Date(2099, 11, 31)}

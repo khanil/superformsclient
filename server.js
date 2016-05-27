@@ -80,7 +80,7 @@ app.get('/api/forms', function(req, res) {
 
     var data = JSON.parse(data);
 
-    var boilerplate = data[data.length-1];
+    var boilerplate = data[0];
 
     res.json(boilerplate);
     console.log('Send response from /api/forms:');
@@ -90,7 +90,6 @@ app.get('/api/forms', function(req, res) {
 
 app.post('/api/forms', function(req, res) {
   console.log(req.body);
-  res.sendStatus(200);
 
   fs.readFile(FORMS_FILE, function(err, data) {
     if (err) {
@@ -110,7 +109,10 @@ app.post('/api/forms', function(req, res) {
         console.error(err);
         process.exit(1);
       }
-      // res.json(comments);
+
+      var id = "12";
+
+      res.json(id);
     });
   });
 });
@@ -133,6 +135,23 @@ app.get('/api/forms/all', function(req, res) {
 });
 
 var ANSWERS_FILE = path.join(__dirname, 'answers.json');
+
+app.get('/api/answers', function(req, res) {
+  console.log('Get query to /api/answers.');
+
+  fs.readFile(ANSWERS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+
+    var data = JSON.parse(data);
+    data = data[data.length-1];
+
+    res.json(data);
+    console.log('Send response from /api/forms:');
+  });
+});
 
 app.post('/api/answers', function(req, res) {
   console.log(req.body);

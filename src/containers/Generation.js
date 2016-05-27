@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
-import sendRequest from '../utils/sendRequest';
 import getDataFromNode from './../utils/getDataFromNode';
 import validate from './../utils/generationValidation';
 import { LIST } from './../constants/questionTypes';
 import Form from './../components/generation/Form';
+import { sendBoilerplate, fetchBoilerplate, setPageType, readUrlsFromHtml } from './../actions/actionsGeneration';
+import { EDIT_FORM } from './../constants/generationPageTypes';//CREATE_FORM, 
+import LoadingSpinner from './../components/widgets/LoadingSpinner';
 
 const fields = [
   'name',
@@ -22,22 +24,34 @@ class FormGeneration extends Component {
     URL на который отправляется результат заполнения формы считывается из
     разметки, в элементе с id 'info'
    */
-  url;
+  urls;
 
   componentWillMount() {
 
     // Получение адресов API к которым производятся запросы
-    let data = getDataFromNode('info', [ 'postUrl']);
+    let data = getDataFromNode('info', 'ALL');
 
     if ( data.fatalError ) {
-      alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+      alert('Произошла ошибка при получении данных из разметки. Пожалуйста свяжитесь с техподдержкой.')
     } else {
-      this.url = data.postUrl;
-    }
 
-    // Инициализация одного поля генерации вопроса по умолчанию
-    const { fields: { questions } } = this.props;
-    questions.addField();
+      this.props.setPageTypeHandler(data.type);
+
+      this.props.readUrlsFromHtmlHandler(data);
+
+      this.urls = data;
+
+      if (data.type === EDIT_FORM) {
+        const getUrl = data.getUrl;
+
+        if ( getUrl === undefined) {
+          alert('Произошла ошибка при получении данных из разметки. Пожалуйста свяжитесь с техподдержкой.')
+        } else {
+          //Запрос существующего шаблона данной формы с сервера
+          this.props.fetchBoilerplateHandler(getUrl);
+        }
+      }
+    }
 
   }
 
@@ -45,8 +59,7 @@ class FormGeneration extends Component {
     // values - объект значений формы
     // url - адрес API на который отправляется форма
     const values = this.props.values;
-    const url = this.url;
-
+    const urls = this.urls;
     /*
       TODO: Перенести на сервер ???
       Удаляет пустые поля options перед отправкой
@@ -57,38 +70,75 @@ class FormGeneration extends Component {
       }
     });
 
-    const str = JSON.stringify(values, '', 2);
-    console.log(str);
+    //Когда у формы появляется id (сохраняется хотя бы один раз),
+    //данные отправляются на другой api
+    const url = (this.props.hasId) ?
+                urls.updateUrl.replace('id', this.props.formId) :
+                urls.createUrl;
 
-    sendRequest('POST', url, str, function (xhr) {
-      console.log(xhr);
-    })
+
+    this.props.sendBoilerplateHandler(url, values);
   }
 
   render() {
 
     const { 
       fields,
-      handleSubmit
+      handleSubmit,
+      isFetching,
+      isSending
     } = this.props;
 
     const mySubmit = this.mySubmit;
 
     return (
-
-      <Form
-        fields= {fields}
-        handleSubmit= {handleSubmit}
-        submit= {mySubmit} />
-
+      <div>
+        {
+          isFetching ?
+          <LoadingSpinner /> :
+          <Form
+            fields= {fields}
+            handleSubmit= {handleSubmit}
+            submit= {mySubmit}
+            isSending={isSending}
+          />
+        }
+      </div>
     );
 
   }
   
 }
 
+const mapStateToProps = (state) => {
+  return {
+    isFetching: state.page.isFetching,
+    initialValues: state.boilerplate,
+    isSending: state.page.isSending,
+    hasId: (state.boilerplate.id !== undefined),
+    formId: state.boilerplate.id
+  }
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    sendBoilerplateHandler: (url, boilerplate) => {
+      dispatch( sendBoilerplate(url, boilerplate) );
+    },
+    fetchBoilerplateHandler: (url) => {
+      dispatch( fetchBoilerplate(url) );
+    },
+    setPageTypeHandler: (type) => {
+      dispatch( setPageType(type) );
+    },
+    readUrlsFromHtmlHandler: (urls) => {
+      dispatch( readUrlsFromHtml(urls) );
+    }
+  }
+}
+
 export default reduxForm({
   form: 'generation',
   fields,
   validate
-})(FormGeneration);
+}, mapStateToProps, mapDispatchToProps)(FormGeneration);

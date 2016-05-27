@@ -3,6 +3,7 @@ import InputText from './../inputs/InputText';
 import InputTextarea from './../inputs/InputTextarea';
 import InputSelect from './../inputs/InputSelect';
 import InputOption from './../inputs/InputOption';
+import ControlButtons from './ControlButtons';
 import { ALL_TYPES_ARRAY, LIST } from './../../constants/questionTypes';
 import * as generationLabels from './../../labels/formGeneration';
 
@@ -13,11 +14,11 @@ export default class Question extends Component {
     const {
       field: { title, description, type, options },
       index,
-      disabledBtn,
+      disabledBtns,
       removeHandler,
       swapUpHandler,
       swapDownHandler,
-      addCopy
+      addCopyHandler
     } = this.props;
 
     let flag = (type.value === LIST.value);
@@ -35,36 +36,17 @@ export default class Question extends Component {
     return (
       <div className='questionGenerator'>
 
+        {/*Порядковый номер вопроса*/}
         <span><b>{'# ' + (index + 1) }</b></span>
-        <div className='btn-group question-config-btn pull-right' role='group' aria-label='...'>
-          <button 
-            type='button' 
-            className='btn btn-default'
-            disabled={(disabledBtn.up) ? 'disabled' : null}
-            onClick={swapUpHandler} >
-            <span className='glyphicon glyphicon-arrow-up' aria-hidden='true'></span>
-          </button>
-          <button 
-            type='button' 
-            className='btn btn-default'
-            disabled={(disabledBtn.down) ? 'disabled' : null}
-            onClick={swapDownHandler} >
-            <span className='glyphicon glyphicon-arrow-down' aria-hidden='true'></span>
-          </button>
-          <button 
-            type='button' 
-            className='btn btn-default'
-            onClick={addCopy}
-           >
-            <span className='glyphicon glyphicon-duplicate' aria-hidden='true'></span>
-          </button>
-          <button 
-            type='button' 
-            className='btn btn-default'
-            onClick={removeHandler} >
-            <span className='glyphicon glyphicon-remove' aria-hidden='true'></span>
-          </button>
-        </div>
+
+        <ControlButtons
+          disabledBtns={disabledBtns}
+          swapUpHandler={swapUpHandler}
+          swapDownHandler={swapDownHandler}
+          removeHandler={removeHandler}
+          addCopyHandler={addCopyHandler}
+        />
+
         <div className='clearfix'></div>
 
         <InputText

@@ -15,7 +15,7 @@ class DeleteFormModal extends Component {
 
     const adds = this.props.url.replace('id', id);
 
-    sendRequest('DELETE', adds, {}, this.props.deleteSuccessHandler, this.props.deleteFailHandler);
+    sendRequest('DELETE', adds, null, this.props.deleteSuccessHandler, this.props.deleteFailHandler);
   }
 
   render() {
@@ -87,7 +87,8 @@ class DeleteFormModal extends Component {
 
 DeleteFormModal.propTypes = {
   hideHandler: PropTypes.func.isRequired,
-  url: PropTypes.string.isRequired
+  url: PropTypes.string.isRequired,
+  successFunc: PropTypes.func.isRequired
 }
 
 const mapStateToProps = (state) => {
@@ -99,13 +100,14 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     deleteFormHandler: () => {
       dispatch( deleteForm() )
     },
     deleteSuccessHandler: () => {
-      dispatch( deleteSuccess() )
+      dispatch( deleteSuccess() );
+      ownProps.successFunc();
     },
     deleteFailHandler: (error) => {
       dispatch( deleteFailed(error) )
