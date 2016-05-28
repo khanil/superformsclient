@@ -1,6 +1,6 @@
 var NODE_ENV = process.env.NODE_ENV;
 
-if (NODE_ENV == 'development') {
+if (NODE_ENV == 'dev') {
   console.log('DEVELOPMENT_MODE');
   var webpack = require('webpack');
   var webpackDevMiddleware = require('webpack-dev-middleware');
@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('views', __dirname + '/dist/views');
 
-if (NODE_ENV == 'development') {
+if (NODE_ENV == 'dev') {
   var compiler = webpack(config);
 
   app.use(webpackDevMiddleware(compiler, {
@@ -43,7 +43,7 @@ app.get("/home", function(req, res) {
 });
 
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/main.html');
+  res.sendFile(__dirname + '/dist/views/index.html');
 });
 
 app.get("/signin", function(req, res) {

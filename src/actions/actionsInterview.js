@@ -5,7 +5,10 @@ import {
   REQUEST_BOILERPLATE,
   RECEIVE_BOILERPLATE,
   REQUEST_RESPONCE,
-  RECIEVE_RESPONCE
+  RECIEVE_RESPONCE,
+  SEND_RESPONSE,
+  SEND_RESPONSE_SUCCESS,
+  SEND_RESPONSE_FAILED
 } from './../constants/actionTypes';
 
 export function setPageType(pageType) {
@@ -62,5 +65,33 @@ export function fetchResponce(url) {
 
       dispatch(recieveResponce(responce));
     });
+  }
+}
+
+function initiateSendingResponse() {
+  return {
+    type: SEND_RESPONSE
+  }
+}
+
+export function sendResponse(json, url, onSuccess) {
+  return (dispatch) => {
+    dispatch(initiateSendingResponse());
+
+    sendRequest('POST', url, json,
+      () => {
+        dispatch({
+          type: SEND_RESPONSE_SUCCESS
+        });
+        onSuccess();
+      }, 
+      (error) => {
+        dispatch({
+          type: SEND_RESPONSE_FAILED
+        });
+        alert('Произошла ошибка при отправке ответов на сервер.');
+        console.log(error);
+      }
+    );
   }
 }

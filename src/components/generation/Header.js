@@ -2,6 +2,7 @@ import React from 'react';
 import InputText from './../inputs/InputText';
 import InputTextarea from './../inputs/InputTextarea';
 import InputSelect from './../inputs/InputSelect';
+import InputContainer from './../inputs/InputContainer';
 import { ALL_TYPES_ARRAY } from './../../constants/formTypes';
 import * as generationLabels from './../../labels/formGeneration';
 
@@ -13,23 +14,26 @@ const Header = ({
 
   <div className='formTitle'>
 
-    <InputSelect
-      field= {type}
-      label= {generationLabels.FORM_TYPE}
-      options= {ALL_TYPES_ARRAY}
-      isRequired= {true}
-    />
+    <InputContainer
+      field={type}
+      label={generationLabels.FORM_TYPE}
+      options={ALL_TYPES_ARRAY}
+      isRequired= {true} >
+      <InputSelect field={type} options={ALL_TYPES_ARRAY} />
+    </InputContainer>
 
-    <InputText 
-      field= {name}
-      label= {generationLabels.FORM_NAME}
-      isRequired= {true}
-    />
+    <InputContainer
+      field={name}
+      label={generationLabels.FORM_NAME}
+      isRequired={true} >
+      <InputText field={name} />
+    </InputContainer>
 
-    <InputTextarea
-      field= {description}
-      label= {generationLabels.FORM_DESCRIPTION}
-    />
+    <InputContainer
+      field={description}
+      label={generationLabels.FORM_DESCRIPTION} >
+      <InputTextarea field={description} />
+    </InputContainer>
 
   </div>
 

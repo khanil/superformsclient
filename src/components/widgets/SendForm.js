@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { reduxForm } from 'redux-form';
+import InputContainer from './../inputs/InputContainer';
 import InputText from './../inputs/InputText';
 import InputTextarea from './../inputs/InputTextarea';
 import InputDatetime from './../inputs/InputDatetime';
@@ -22,26 +23,29 @@ class SendForm extends Component {
     return (
       <form  method='POST' role='form'>
 
-        <InputTextarea
+        <InputContainer
           label='Адреса электронной почты получателей'
           field={recipients}
-          tip='Введите адреса e-mail через запятую'
-          isRequired={true}
-        />
+          description='Введите адреса e-mail через запятую'
+          isRequired={true}>
+          <InputTextarea field={recipients}/>
+        </InputContainer>
 
         <blockquote>
           <p>Вы можете указать тему рассылки и сообщение письма.</p>
         </blockquote>
 
-        <InputText
+        <InputContainer
           label='Тема'
-          field={topic}
-        />
+          field={topic}>
+          <InputText field={topic}/>
+        </InputContainer>
 
-        <InputTextarea
+        <InputContainer
           label='Сообщение'
-          field={message}
-        />
+          field={message}>
+          <InputTextarea field={message}/>
+        </InputContainer>
 
         <div className='checkbox'>
           <label>
@@ -51,13 +55,15 @@ class SendForm extends Component {
         </div>
 
         {
-          expires.value ?
-          <InputDatetime
+          expires.value
+          ? <InputContainer
             label='Дата окончания приема ответов'
-            field={expireDate}
-            min={new Date()}
-          /> :
-          null
+            field={expireDate}>
+            <InputDatetime
+              field={expireDate}
+              min={new Date()}/>
+            </InputContainer>
+          : null
         }
         
       </form>

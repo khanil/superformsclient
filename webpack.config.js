@@ -1,11 +1,11 @@
 var path = require('path');
 var webpack = require('webpack');
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV || 'dev';
 
 module.exports = {
 
-   entry: ( NODE_ENV == 'production') ?
+   entry: ( NODE_ENV == 'prod') ?
   {
     generation: ['babel-polyfill', './src/entries/generation'],
     interview: ['babel-polyfill', './src/entries/interview'],
@@ -16,13 +16,13 @@ module.exports = {
   [
     'webpack-hot-middleware/client', // Для поддержки hot-reload
     'babel-polyfill',
-     './src/entries/generation' //Генерация формы
+    // './src/entries/generation' //Генерация формы
     // './src/entries/interview' //Анкета
     // './src/entries/report' //Отчет
-    //'./src/entries/main' //Главная страница ( список всех форм)
+    './src/entries/main' //Главная страница ( список всех форм)
   ],
 
-  output: ( NODE_ENV == 'production') ? 
+  output: ( NODE_ENV == 'prod') ? 
   {
     path: path.join(__dirname, 'dist/scripts'),
     filename: '[name].js'
@@ -79,16 +79,16 @@ loaders: [
   
 ]
 
-// if (NODE_ENV == 'production') {
-//   module.exports.plugins.push(
-//     new webpack.optimize.UglifyJsPlugin({
-//       compress: {
-//         warnings: false,
-//         drop_console: true,
-//         unsafe: true
-//       }
-//     })
-//   );
-// }
+if (NODE_ENV == 'prod') {
+  module.exports.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+        drop_console: true,
+        unsafe: true
+      }
+    })
+  );
+}
 
-//'development' ? '#cheap-module-eval-source-map' : null,
+//'dev' ? '#cheap-module-eval-source-map' : null,

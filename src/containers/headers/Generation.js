@@ -22,10 +22,6 @@ class GenerationHeader extends Component {
     window.open(window.location.origin + adds, '_blank');
   }
 
-  closePageHandler = () => {
-    return 'лололо';
-  }
-
   render() {
     const {
       isSending,

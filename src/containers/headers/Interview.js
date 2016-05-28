@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {Tooltip, OverlayTrigger} from 'react-bootstrap';
+// import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 import { ANSWER_REVIEW, PREVIEW_FORM } from './../../constants/interviewPageTypes';
 
 import * as formTypes from './../../constants/formTypes';
@@ -25,7 +25,7 @@ class InterviewHeader extends Component {
       received
     } = this.props;
 
-    const col = (pageType === ANSWER_REVIEW) ?
+    const col = (pageType === ANSWER_REVIEW || pageType === PREVIEW_FORM) ?
                 'col-md-12 col-lg-12' :
                 'col-md-9 col-lg-9';
 
@@ -51,7 +51,11 @@ class InterviewHeader extends Component {
               :
               <div className='col-md-6 col-sm-6'>
                 <p>{'Создано: ' + Moment(created).format(format)}</p>
-                <p>{'Отредактировано: ' + Moment(edited).format(format)}</p>
+                {
+                  edited ?
+                  <p>{'Отредактировано: ' + Moment(edited).format(format)}</p> :
+                  null
+                }
               </div>
             :
             null
@@ -68,7 +72,7 @@ class InterviewHeader extends Component {
           }
         </div>
 
-        {/*Блок с кнопками*/}
+        {/*Блок с кнопками
         {
           pageType === ANSWER_REVIEW ?
           null :
@@ -119,7 +123,7 @@ class InterviewHeader extends Component {
               </div>
             </div>
           </div>
-        }
+        }*/}
 
       </div>
     );

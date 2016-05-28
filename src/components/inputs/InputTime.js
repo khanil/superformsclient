@@ -12,30 +12,14 @@ import momentLocalizer from 'react-widgets/lib/localizers/moment';
 momentLocalizer(Moment);
 
 const InputTime = ({
-  field,
-  label,
-  isRequired = false
-}) => {
-
-  const labelNode = label
-    ? <label htmlFor={field.name} className='control-label'>
-        {label + ( (isRequired) ? '*' : '') }
-      </label>
-    : null;
-
-  return (
-    <div className={ (!field.touched) ? 'form-group' : (field.invalid) ?  'form-group has-error' : 'form-group has-success'}>
-      {labelNode}
-      <DateTimePicker
-        format='HH:mm'
-        calendar={false}
-        value={(field.value) ? Moment(field.value).toDate() : null}
-        onChange={field.onChange}
-      />
-      {field.touched && field.error && <div className='help-block'>{field.error}</div>}
-    </div>
-  );
-
-}
+  field
+}) => (
+  <DateTimePicker
+    format='HH:mm'
+    calendar={false}
+    value={(field.value) ? Moment(field.value).toDate() : null}
+    onChange={field.onChange}
+  />
+);
 
 export default InputTime;

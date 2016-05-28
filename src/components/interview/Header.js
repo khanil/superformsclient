@@ -10,7 +10,12 @@ const Header = ({
 }) => (
   <div className='formTitle'>
     <h1>{name}</h1>
-    <blockquote>{description}</blockquote>
+    {
+      description ?
+      <blockquote>{description}</blockquote> :
+      null
+    }
+    
   </div>
 );
 

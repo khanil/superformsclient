@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import { reduxForm } from 'redux-form';
+import InputContainer from './../inputs/InputContainer';
 import InputText from './../inputs/InputText';
 import { Modal } from 'react-bootstrap';
 import { EMPTY } from './../../labels/validationErrors';
@@ -80,11 +81,12 @@ class CopyFormModal extends Component {
             null :
             <form role='form'>
 
-              <InputText
+              <InputContainer
                 label='Название копии формы'
                 field={name}
-                isRequired={true}
-              />
+                isRequired={true}>
+                <InputText field={name}/>
+              </InputContainer>
 
             </form>
           }

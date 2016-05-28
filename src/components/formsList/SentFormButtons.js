@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 
 const SentFormButtons = ({
-  showStatus,
+  showStatusModal,
   openAnswersPage
 }) => (
   <div className='btn-group'>
@@ -14,7 +14,7 @@ const SentFormButtons = ({
       <button
         type='button'
         className='btn btn-default'
-        onClick={showStatus}
+        onClick={showStatusModal}
       >
         <span className='glyphicon glyphicon-stats' aria-hidden='true'></span>
       </button>
@@ -36,7 +36,7 @@ const SentFormButtons = ({
 );
 
 SentFormButtons.propTypes = {
-  showStatus: PropTypes.func.isRequired,
+  showStatusModal: PropTypes.func.isRequired,
   openAnswersPage: PropTypes.func.isRequired
 };
 

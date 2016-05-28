@@ -27,14 +27,6 @@ class FormRow extends Component {
     document.location.pathname = adds;
   }
 
-  showStatusHandler = () => {
-    var id = this.props.form.id;
-
-    var adds = this.props.urls.statusUrl.replace('id', id);
-
-    alert('Go to ' + adds +'.');
-  }
-
   openAnswersPageHandler = () => {
     const id = this.props.form.id;
 
@@ -57,6 +49,7 @@ class FormRow extends Component {
       showSendModal,
       toggleCopyModal,
       showDeleteModal,
+      showStatusModal,
       form: {
         id,
         name,
@@ -68,7 +61,6 @@ class FormRow extends Component {
     } = this.props;
 
     const openPreviewPageHandler = this.openPreviewPageHandler;
-    const showStatusHandler = this.showStatusHandler;
     const openAnswersPageHandler = this.openAnswersPageHandler;
     const openEditPageHandler = this.openEditPageHandler;
 
@@ -91,7 +83,7 @@ class FormRow extends Component {
           {
             sent ?
             <SentFormButtons
-              showStatus={showStatusHandler}
+              showStatusModal={() => {showStatusModal(id)}}
               openAnswersPage={openAnswersPageHandler}
             /> :
             <UnsentFormButtons 

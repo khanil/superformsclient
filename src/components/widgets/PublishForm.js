@@ -1,4 +1,5 @@
 import React from 'react';
+import InputContainer from './../inputs/InputContainer';
 
 const PublishForm = ({
   formId
@@ -9,17 +10,16 @@ const PublishForm = ({
       неограниченному кругу лиц.</p>
       <p>Получение ответов начнется только после отправки.</p>
     </blockquote>
-    <div className='form-group'>
-      <label>
-        Адрес формы
-      </label>
+    <InputContainer
+      label='Адрес формы'
+      field={ {} }>
       <input 
         type='text'
         className='form-control'
         value={'http://' + window.location.host + '/forms/' + formId}
         readOnly
        />
-    </div>
+    </InputContainer>
   </div>
 );
 

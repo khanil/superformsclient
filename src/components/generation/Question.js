@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import InputContainer from './../inputs/InputContainer';
 import InputText from './../inputs/InputText';
 import InputTextarea from './../inputs/InputTextarea';
 import InputSelect from './../inputs/InputSelect';
@@ -49,23 +50,27 @@ export default class Question extends Component {
 
         <div className='clearfix'></div>
 
-        <InputText
-          label= {generationLabels.QUESTION_NAME}
-          field= {title} 
-          isRequired= {true}
-        />
+        <InputContainer
+          label={generationLabels.QUESTION_NAME}
+          field={title}
+          isRequired= {true}>
+          <InputText field={title}/>
+        </InputContainer>
 
-        <InputTextarea
+        <InputContainer
           label= {generationLabels.QUESTION_DESCRIPTION}
-          field= {description}
-        />
+          field= {description}>
+          <InputTextarea field= {description}/>
+        </InputContainer>
 
-        <InputSelect
-          label= {generationLabels.ANSWER_TYPE}
-          field= {type}
-          options= {ALL_TYPES_ARRAY}
-          isRequired= {true}
-        />
+        <InputContainer
+          label={generationLabels.ANSWER_TYPE}
+          field={type}
+          isRequired={true}>
+          <InputSelect
+            field={type}
+            options={ALL_TYPES_ARRAY}/>
+        </InputContainer>
 
         {
           (flag)

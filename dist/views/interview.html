@@ -9,31 +9,30 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top" id="page-header">
+  <!-- <nav class="navbar navbar-default navbar-fixed-top" id="page-header">
     <div class="container">
       <div class="row">
         <div class="col-md-2 col-lg-2 page-header-return">
           <a href="#">
             <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
-            <!-- TODO: вставлять наименование страницы -->
             К списку форм
           </a>
         </div>
         <div class="col-md-10 col-lg-10" id="header-root">
-          <!-- Здесь динамичное содержимое шапки -->
         </div>
       </div>
     </div>
-  </nav>
+  </nav> -->
   <div class="container" id="root">
     <!-- Здесь динамичное содержимое страницы -->
   </div>
   <script id="info" type="application/json">
     { 
-      "type": "ANSWER_REVIEW",
+      "type": "INTERVIEW_FORM",
       "getUrl": "/api/forms/",
       "postUrl": "/api/answers/",
-      "responseUrl": "/api/answers"
+      "responseUrl": "/api/answers",
+      "redirectUrl": "/succes/page"
     }
   </script>
   <script type="text/javascript" src="/static/home.js"></script>

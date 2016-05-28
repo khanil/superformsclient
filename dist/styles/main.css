@@ -3,7 +3,7 @@
 }
 
 body {
-  padding-top: 100px;
+  padding-top: 70px;
 }
 
 body.no-header {
@@ -138,14 +138,12 @@ table .form-group {
    overflow: auto;
 }*/
 
-.report-header {
-  position: relative;
+.report-header h1 {
+  display: inline-block;
 }
 
-.description-toggle-btn {
-  position: absolute;
-  right: -10px;
-  top: 0;
+.report-header .btn-tip {
+  margin-top: -30px;
 }
 
 /*Список всех форм*/
@@ -180,10 +178,24 @@ table .form-group {
   margin-right: 10px;
 }
 
-.send-form-modal blockquote {
+.send-form-modal blockquote,
+.status-modal-container blockquote {
   font-size: 14px;
 }
 
 .copy-form-modal button[type="submit"] {
   margin-bottom: 0;
+}
+
+.all-answers-table-container tr {
+  cursor: pointer;
+}
+
+.btn-tip {
+  margin-left: 5px;
+}
+
+.btn-tip i {
+  padding-left: 2px;
+  padding-right: 2px;
 }

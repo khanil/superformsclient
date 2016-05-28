@@ -6,6 +6,7 @@ import getDataFromNode from './../utils/getDataFromNode';
 import { fetchForms } from './../actions/actionsFormsList';
 import { showModal as showSendModal, hideModal as hideSendModal } from './../actions/actionsSendModal';
 import { showModal as showDeleteModal, hideModal as hideDeleteModal } from './../actions/actionsDeleteModal';
+import { showModal as showStatusModal, hideModal as hideStatusModal } from './../actions/actionsStatusModal';
 import { toggleModal } from './../actions/actionsCopyModal';
 
 import FormRow from './../components/formsList/FormRow';
@@ -13,6 +14,7 @@ import LoadingSpinner from './../components/widgets/LoadingSpinner';
 import SendFormModal from './../components/widgets/SendFormModal';
 import CopyFormModal from './../components/widgets/CopyFormModal';
 import DeleteFormModal from './../components/widgets/DeleteFormModal';
+import FormStatusModal from './../components/widgets/FormStatusModal';
 
 class FormsList extends Component {
 
@@ -50,11 +52,14 @@ class FormsList extends Component {
       isSendModalVisible,
       isCopyModalVisible,
       isDeleteModalVisible,
+      isStatusModalVisible,
       showSendModalHandler,
       hideSendModalHandler,
       toggleCopyModalHandler,
       showDeleteModalHandler,
-      hideDeleteModalHandler
+      hideDeleteModalHandler,
+      showStatusModalHandler,
+      hideStatusModalHandler
     } = this.props;
 
     const urls = this.urls;
@@ -83,6 +88,7 @@ class FormsList extends Component {
                   showSendModal={showSendModalHandler}
                   toggleCopyModal={toggleCopyModalHandler}
                   showDeleteModal={showDeleteModalHandler}
+                  showStatusModal={showStatusModalHandler}
                 />
               ))
             }
@@ -120,6 +126,14 @@ class FormsList extends Component {
           null
         }
 
+        {
+          isStatusModalVisible ?
+          <FormStatusModal
+            hideHandler={hideStatusModalHandler}
+          /> :
+          null
+        }
+
       </div>
     );
   }
@@ -133,7 +147,8 @@ const mapStateToProps = (state) => {
     isFetching: state.formsList.isFetching,
     isSendModalVisible: state.sendModal.isVisible,
     isCopyModalVisible: state.copyModal.isVisible,
-    isDeleteModalVisible: state.deleteModal.isVisible
+    isDeleteModalVisible: state.deleteModal.isVisible,
+    isStatusModalVisible: state.statusModal.isVisible
   }
 };
 
@@ -156,6 +171,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     hideDeleteModalHandler: () => {
       dispatch( hideDeleteModal() )
+    },
+    showStatusModalHandler: (id) => {
+      dispatch( showStatusModal(id) )
+    },
+    hideStatusModalHandler: () => {
+      dispatch( hideStatusModal() )
     }
   }
 };

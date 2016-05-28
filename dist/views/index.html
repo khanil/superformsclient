@@ -10,7 +10,21 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-  <div class="container" id="root"></div>
+  <nav class="navbar navbar-default navbar-fixed-top" id="page-header">
+    <div class="container">
+      <div class="row">
+        <div class="pull-right" id="header-root">
+          <a href="/forms/new">
+            <button type="button" class="">
+              <span>Создать форму</span>
+            </button>
+          </a>
+        </div>
+    </div>
+  </nav>
+  <div class="container" id="root">
+    <!-- Здесь динамичное содержимое страницы -->
+  </div>
   <script id="info" type="application/json">
     {
       "getUrl": "/api/forms/all",

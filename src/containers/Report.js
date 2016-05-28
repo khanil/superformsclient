@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 import getDataFromNode from './../utils/getDataFromNode';
 import { fetchData, showReportGeneration, hideReportGeneration, toggleDescription } from './../actions/actionsReport';
 import ReportGeneration from './ReportGeneration';
@@ -9,15 +10,18 @@ import { INTEGER, FLOAT } from './../constants/questionTypes';
 
 class Report extends Component {
 
+  responsePreviewUrl;
+
   componentWillMount() {
 
-    let data = getDataFromNode('info', ['getUrl']);
+    let data = getDataFromNode('info', ['getUrl', 'responsePreviewUrl']);
 
     if ( data.fatalError ) {
       alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
     } else {
       //Запрос шаблона формы с сервера
       this.props.fetchDataHandler(data.getUrl);
+      this.responsePreviewUrl = data.responsePreviewUrl;
     }
 
   }
@@ -42,6 +46,7 @@ class Report extends Component {
     } = this.props;
 
     const isColumnTypeNumber = this.isColumnTypeNumber.bind(this);
+    const responsePreviewUrl = this.responsePreviewUrl;
 
     const numberSort = (a, b, order, sortField) => {
       if ( order === 'desc' ) {
@@ -71,6 +76,17 @@ class Report extends Component {
       return TableColumns;
     }
 
+    const onRowClickHandler = (row) => {
+      var adds = responsePreviewUrl.replace('response_id', row.id);
+
+      console.log(adds);
+      window.open(window.location.origin + adds, '_blank');
+    }
+
+    const optionsProp = {
+      onRowClick: onRowClickHandler
+    }
+
     return (
       <div>
 
@@ -84,16 +100,23 @@ class Report extends Component {
         :
 
         <div>
-
           <div className='report-header'>
             <h1>{formTitle}</h1>
 
             {
-              (formDescription !== undefined && formDescription !== '') ?
-              <button type='button' className='btn btn-default btn-xs description-toggle-btn' onClick={toggleDescriptionHandler}>
-                <span className='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
-              </button> :
-              null
+              (formDescription !== undefined && formDescription !== '')
+              ? <OverlayTrigger
+                  placement='top'
+                  overlay={<Tooltip>{isDescriptionVisible ? 'Скрыть описание' : 'Показать описание'}</Tooltip>}
+                >
+                  <button
+                    type='button'
+                    className='btn btn-info btn-xs btn-tip'
+                    onClick={toggleDescriptionHandler}>
+                    <i className='fa fa-info' aria-hidden='true'></i>
+                  </button>
+                </OverlayTrigger>
+              : null
             }
 
             {
@@ -103,14 +126,16 @@ class Report extends Component {
             }
           </div>
 
-          <BootstrapTable 
-            data={answers}
-            striped={true}
-            hover={true}
-            height={(!isGenerationVisible) ? '500' : '300'}
-          >
-            { renderTableColumns() }
-          </BootstrapTable>
+          <div className='all-answers-table-container'>
+            <BootstrapTable 
+              data={answers}
+              striped={true}
+              hover={true}
+              height={(!isGenerationVisible) ? '420' : '255'}
+              options={optionsProp}>
+              { renderTableColumns() }
+            </BootstrapTable>
+          </div>
 
           {
             ( isGenerationVisible )

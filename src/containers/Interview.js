@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import getDataFromNode from './../utils/getDataFromNode';
-import { fetchBoilerplate, fetchResponce, setPageType } from './../actions/actionsInterview';
+import { fetchBoilerplate, fetchResponce, setPageType, sendResponse } from './../actions/actionsInterview';
 import InterviewForm from './../components/interview/InterviewForm';
 import Header from './../components/interview/Header';
 import LoadingSpinner from './../components/widgets/LoadingSpinner';
-import sendRequest from './../utils/sendRequest';
+// import sendRequest from './../utils/sendRequest';
 import {getValues} from 'redux-form';
 import { ANSWER_REVIEW, INTERVIEW_FORM } from './../constants/interviewPageTypes';//PREVIEW_FORM, 
 
@@ -17,6 +17,7 @@ class Interview extends Component {
     разметки, в элементе с id 'info'
    */
   url;
+  redirectUrl;
 
   componentWillMount() {
 
@@ -30,14 +31,15 @@ class Interview extends Component {
       if (data.type === INTERVIEW_FORM) {
         document.body.classList.add('no-header');
 
-        let additionalData = getDataFromNode('info', ['postUrl']);
+        let additionalData = getDataFromNode('info', ['postUrl', 'redirectUrl']);
 
         if (additionalData.fatalError) {
-          alert('Не указан postUrl. Пожалуйста свяжитесь с техподдержкой.');
+          alert('Не указан postUrl или redirectUrl. Пожалуйста свяжитесь с техподдержкой.');
           return;
         } else {
           //Запрос ответа на форму с сервера
           this.url = additionalData.postUrl;
+          this.redirectUrl = additionalData.redirectUrl;
         }
       }
 
@@ -68,13 +70,15 @@ class Interview extends Component {
     // url - адрес API на который отправляется форма
     const values = this.props.formValues;
     const url = this.url;
+    const redirectUrl = this.redirectUrl;
 
     const str = JSON.stringify(values, '', 2);
-    console.log(str);
 
-    sendRequest('POST', url, str, function (xhr) {
-      console.log(xhr);
-    })
+    const onSuccess = () => {
+      document.location.pathname = redirectUrl;
+    }
+
+    this.props.sendResponseHandler(str, url, onSuccess);
   };
 
   render() {
@@ -112,15 +116,15 @@ class Interview extends Component {
           {
             //Активировать отправку формы на сервер в случае если страница
             //отрабатывает сценарий заполнения опроса
-            (pageType === INTERVIEW_FORM) ?
-            <button
+            (pageType === INTERVIEW_FORM)
+            ? <button
               type='submit'
               className='btn btn-primary btn-block'
               onClick={this.handleSubmit}
             >
               Отправить
-            </button> :
-            null
+            </button>
+            : null
           }
         </div>
       }
@@ -154,6 +158,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     setPageTypeHandler: (type) => {
       dispatch( setPageType(type) );
+    },
+    sendResponseHandler: (json, url, onSuccess) => {
+      dispatch( sendResponse(json, url, onSuccess) );
     }
   }
 }

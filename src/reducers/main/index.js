@@ -3,6 +3,7 @@ import formsList from './formsList';
 import sendModal from './sendModal';
 import copyModal from './copyModal';
 import deleteModal from './deleteModal';
+import statusModal from './statusModal';
 import { reducer as formReducer } from 'redux-form';
 
 export default combineReducers({
@@ -10,5 +11,6 @@ export default combineReducers({
   sendModal,
   copyModal,
   deleteModal,
+  statusModal,
   form: formReducer
 });

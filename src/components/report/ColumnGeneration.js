@@ -1,4 +1,5 @@
 import React, {PropTypes, Component} from 'react';
+import InputContainer from './../inputs/InputContainer';
 import InputSelect from './../inputs/InputSelect';
 import InputText from './../inputs/InputText';
 import * as questionTypes from './../../constants/questionTypes';
@@ -61,21 +62,26 @@ class ColumnGeneration extends Component {
           {index}
         </th>
         <td>
-          <InputSelect
-            field={fields.questionTitle}
-            options={columns}
-          />
+          <InputContainer
+            field={fields.questionTitle}>
+            <InputSelect
+              field={fields.questionTitle}
+              options={columns}/>
+          </InputContainer>
         </td>
         <td>
-          <InputSelect
-            field={fields.action}
-            options={getActions()}
-          />
+          <InputContainer
+            field={fields.action}>
+            <InputSelect
+              field={fields.action}
+              options={getActions()}/>
+          </InputContainer>
         </td>
         <td>
-          <InputText
-            field={fields.newTitle}
-          />
+          <InputContainer
+            field={fields.newTitle}>
+            <InputText field={fields.newTitle}/>
+          </InputContainer>
         </td>
         <td className='td-btn'>
           <div className='btn-group'>

@@ -9,11 +9,27 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+  <nav class="navbar navbar-default navbar-fixed-top" id="page-header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2 col-lg-2 page-header-return">
+          <a href="#">
+            <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+            <span>К списку форм</span>
+          </a>
+        </div>
+        <div class="col-md-10 col-lg-10" id="header-root">
+          <!-- Здесь динамичное содержимое шапки -->
+        </div>
+      </div>
+    </div>
+  </nav>
   <div class="container" id="root"></div>
   <script id="info" type="application/json">
     {
       "getUrl": "/api/answers/form123",
-      "postUrl": "/api/answers/"
+      "postUrl": "/api/answers/",
+      "responsePreviewUrl": "/api/forms/12/responses/response_id"
     }
   </script>
   <script type="text/javascript" src="/static/home.js"></script>

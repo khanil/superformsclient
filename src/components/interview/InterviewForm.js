@@ -9,10 +9,11 @@ import InputTextarea from './../../components/inputs/InputTextarea';
 import InputSelect from './../../components/inputs/InputSelect';
 import InputDate from './../../components/inputs/InputDate';
 import InputTime from './../../components/inputs/InputTime';
+import InputContainer from './../../components/inputs/InputContainer';
 
 class InterviewForm extends Component {
 
-  renderQuestions = () => {
+  renderQuestions() {
     const {
       fields,
       questions
@@ -20,61 +21,53 @@ class InterviewForm extends Component {
 
     return questions.map(
       (question, index) => {
-        let { title, type, options = null } = question;
+        let { title, description, type, options = null } = question;
         //Добавление нумерации вопросов
         let label = (index + 1) + '. ' + title;
 
-        switch (type) {
+        let inputNode = this.getInputByType(type, fields[title], options);
 
-          case questionTypes.PARAGRAPH.value :
-            return (
-              <InputTextarea
-                key={index}
-                field={fields[title]}
-                label={label} 
-                isRequired= {true} />
-            );
+        return (
+          <InputContainer
+            key={index}
+            field={fields[title]}
+            label={label}
+            description={description}
+            isRequired= {true} >
+            {inputNode}
+          </InputContainer>
+        );
+    });
+  }
 
-          case questionTypes.LIST.value :
-            return (
-              <InputSelect
-                key={index}
-                field={fields[title]}
-                label={label}
-                options={options} 
-                isRequired= {true} />
-            );
+  getInputByType(type, field, options) {
+    switch (type) {
+      case questionTypes.PARAGRAPH.value :
+        return (
+          <InputTextarea field={field} />
+        );
 
-          case questionTypes.DATE.value :
-            return (
-              <InputDate
-                key={index}
-                field={fields[title]}
-                label={label}
-                isRequired={true} />
-            );
+      case questionTypes.LIST.value :
+        return (
+          <InputSelect field={field} options={options}/>
+        );
 
-          case questionTypes.TIME.value :
-            return (
-              <InputTime
-                key={index}
-                field={fields[title]}
-                label={label}
-                isRequired={true} />
-            );
+      case questionTypes.DATE.value :
+        return (
+          <InputDate field={field} />
+        );
 
-          default :
-            return (
-              <InputText
-                key={index}
-                field={fields[title]}
-                label={label} 
-                isRequired= {true} />
-            );
-        }
-      }
-    )
-  };
+      case questionTypes.TIME.value :
+        return (
+          <InputTime field={field} />
+        );
+
+      default :
+        return (
+          <InputText field={field} />
+        );
+    }
+  }
 
   render() {
 
@@ -85,10 +78,13 @@ class InterviewForm extends Component {
     return (
       <form className='formGenerator'>
 
-        <InputText
+        <InputContainer
           field= {fields['Автор']}
           label= {'Ваше ФИО / Наименование организации'} 
-          isRequired= {true} />
+          isRequired= {true} >
+          <InputText
+            field= {fields['Автор']} />
+        </InputContainer>
 
         {this.renderQuestions()}
 
