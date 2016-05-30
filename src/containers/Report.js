@@ -6,7 +6,7 @@ import getDataFromNode from './../utils/getDataFromNode';
 import { fetchData, showReportGeneration, hideReportGeneration, toggleDescription } from './../actions/actionsReport';
 import ReportGeneration from './ReportGeneration';
 import LoadingSpinner from './../components/widgets/LoadingSpinner';
-import { INTEGER, FLOAT } from './../constants/questionTypes';
+import { isNumeric } from './../utils/questionTypes';
 
 class Report extends Component {
 
@@ -26,10 +26,6 @@ class Report extends Component {
 
   }
 
-  isColumnTypeNumber(type) {
-    return ( type === INTEGER.value || type === FLOAT.value);
-  }
-
   render() {
 
     const {
@@ -45,7 +41,6 @@ class Report extends Component {
       hideGenerationHandler
     } = this.props;
 
-    const isColumnTypeNumber = this.isColumnTypeNumber.bind(this);
     const responsePreviewUrl = this.responsePreviewUrl;
 
     const numberSort = (a, b, order, sortField) => {
@@ -65,8 +60,8 @@ class Report extends Component {
             isKey={key === 'Автор'}
             dataField={key}
             key={key}
-            dataSort={true}
-            sortFunc={(isColumnTypeNumber(header[key]) ? numberSort : null)}
+            dataSort={isNumeric(header[key]) ? true : false}
+            sortFunc={isNumeric(header[key]) ? numberSort : null}
           >
             {key}
           </TableHeaderColumn>
