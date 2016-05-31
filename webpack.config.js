@@ -7,9 +7,9 @@ module.exports = {
 
    entry: ( NODE_ENV == 'prod') ?
   {
-    generation: ['babel-polyfill', './src/entries/generation'],
-    interview: ['babel-polyfill', './src/entries/interview'],
-    report: ['babel-polyfill', './src/entries/report'],
+    // generation: ['babel-polyfill', './src/entries/generation'],
+    // interview: ['babel-polyfill', './src/entries/interview'],
+    // report: ['babel-polyfill', './src/entries/report'],
     main: ['babel-polyfill', './src/entries/main']
   }
   :

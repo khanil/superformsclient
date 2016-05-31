@@ -54,12 +54,6 @@ body.no-header {
   margin-right: 15px;
 }
 
-@media (max-width: 992px) {
-  #page-header {
-    height: 130px;
-  }
-}
-
 #root {
   margin-top: 30px;
 }
@@ -198,4 +192,8 @@ table .form-group {
 .btn-tip i {
   padding-left: 2px;
   padding-right: 2px;
+}
+
+.dropdown-toggle span:first-child {
+  margin-right: 2px;
 }

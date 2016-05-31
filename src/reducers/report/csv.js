@@ -5,7 +5,7 @@ import {
 } from './../../constants/actionTypes';
 
 const initalState = {
-  content: 'Symbol,Company,Price\nAAPL,Apple Inc.,132.54\nINTC,Intel Corporation,33.45\nGOOG,Google Inc,554.52',
+  content: null,
   error: null,
   isFetching: true
 }
