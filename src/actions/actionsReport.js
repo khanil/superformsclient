@@ -6,7 +6,13 @@ import {
   HEADER_BUILDED,
   SHOW_GENERATION,
   HIDE_GENERATION,
-  TOGGLE_DESCRIPTION
+  TOGGLE_DESCRIPTION,
+  FETCH_TABLE_CSV_REQUEST,
+  FETCH_TABLE_CSV_SUCCESS,
+  FETCH_TABLE_CSV_FAILURE,
+  FETCH_REPORT_CSV_REQUEST,
+  FETCH_REPORT_CSV_SUCCESS,
+  FETCH_REPORT_CSV_FAILURE
 } from './../constants/actionTypes';
 
 // eslint-disable-line no-undef
@@ -45,27 +51,9 @@ export function fetchData(url) {
         'Автор' : 'string'
       }
 
-      // let header = [
-      //   {
-      //     id: 'Автор',
-      //     title: 'ФИО'
-      //   }
-      // ];
-
       JSON.parse(xhr.responseText).form.questions.forEach( (question) => {
         header[question.title] = question.type;
       });
-
-      // let headerFromBoilerplate = JSON.parse(xhr.responseText).form.questions.map( (question) => {
-      //   return (
-      //     {
-      //       id: question.title,
-      //       title: question.title
-      //     }
-      //   );
-      // });
-
-      // header = header.concat(headerFromBoilerplate);
 
       dispatch(recieveHeader(header));
     });
@@ -87,5 +75,76 @@ export function hideReportGeneration() {
 export function toggleDescription() {
   return {
     type: TOGGLE_DESCRIPTION
+  }
+}
+
+export function requestCSV() {
+  return {
+    type: FETCH_TABLE_CSV_REQUEST
+  }
+}
+
+function fetchTableCSVSuccess(xhr) {
+  return {
+    type: FETCH_TABLE_CSV_SUCCESS,
+    csv: JSON.parse(xhr.responseText)
+  }
+}
+
+function fetchTableCSVFailure(error) {
+  return {
+    type: FETCH_TABLE_CSV_FAILURE,
+    error: error
+  }
+}
+
+export function fetchTableCSV(url, onErrorFn) {
+  return (dispatch) => {
+    dispatch({
+      type: FETCH_TABLE_CSV_REQUEST,
+      url: url
+    });
+
+    sendRequest('GET', url, null,
+      (xhr) => ( dispatch( fetchTableCSVSuccess(xhr) ) ),
+      (error) => {
+        dispatch( fetchTableCSVFailure(error) );
+        if (onErrorFn) onErrorFn();
+      }
+    );
+  }
+}
+
+function fetchReportCSVSuccess(xhr) {
+  return {
+    type: FETCH_REPORT_CSV_SUCCESS,
+    csv: JSON.parse(xhr.responseText)
+  }
+}
+
+function fetchReportCSVFailure(error) {
+  return {
+    type: FETCH_REPORT_CSV_FAILURE,
+    error: error
+  }
+}
+
+export function fetchReportCSV(url, settings, onErrorFn, onSuccessFn) {
+  return (dispatch) => {
+    dispatch({
+      type: FETCH_REPORT_CSV_REQUEST,
+      url: url
+    });
+
+    sendRequest('POST', url, settings,
+      (xhr) => {
+        dispatch( fetchReportCSVSuccess(xhr) );
+        if (onSuccessFn) onSuccessFn(JSON.parse(xhr.responseText));
+      },
+      (error) => {
+        dispatch( fetchReportCSVFailure(error) );
+        if (onErrorFn) onErrorFn();
+      }
+    );
   }
 }

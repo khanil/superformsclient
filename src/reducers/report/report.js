@@ -1,55 +1,60 @@
 
 import {
-  REQUEST_DATA,
-  RECEIVE_DATA,
-  HEADER_BUILDED,
   SHOW_GENERATION,
   HIDE_GENERATION,
-  TOGGLE_DESCRIPTION
+  FETCH_REPORT_CSV_REQUEST,
+  FETCH_REPORT_CSV_SUCCESS,
+  FETCH_REPORT_CSV_FAILURE
 } from './../../constants/actionTypes';
 
 const initalState = {
-  answers: [],
-  boilerplate: {},
-  header: [],
-  isFetching: true,
-  isDescriptionVisible: false,
-  isGenerationVisible: false
+  isVisible: false,
+  isFetching: false,
+  needRefetch: true,
+  csv: null,
+  error: null
 }
 
 function report (state = initalState, action) {
   switch (action.type) {
 
-    case REQUEST_DATA:
-      return Object.assign({}, state, {
-        isFetching: true
-      });
-
-    case RECEIVE_DATA:
-      return Object.assign({}, state, {
-        answers: action.answers,
-        boilerplate: action.boilerplate
-      });
-
-    case HEADER_BUILDED:
-      return Object.assign({}, state, {
-        isFetching: false,
-        header: action.header
-      });
-
     case SHOW_GENERATION:
       return Object.assign({}, state, {
-        isGenerationVisible: true
+        isVisible: true
       });
 
     case HIDE_GENERATION:
       return Object.assign({}, state, {
-        isGenerationVisible: false
+        isVisible: false,
+        needRefetch: true
       });
 
-    case TOGGLE_DESCRIPTION:
+    case FETCH_REPORT_CSV_REQUEST:
       return Object.assign({}, state, {
-        isDescriptionVisible: !state.isDescriptionVisible
+        isFetching: true,
+        error: null
+      });
+
+    case FETCH_REPORT_CSV_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        csv: action.csv,
+        error: null,
+        needRefetch: false
+      });
+
+    case FETCH_REPORT_CSV_FAILURE:
+      return Object.assign({}, state, {
+        isFetching: false,
+        error: action.error
+      });
+
+    case 'redux-form/SWAP_ARRAY_VALUES':
+    case 'redux-form/REMOVE_ARRAY_VALUE':
+    case 'redux-form/ADD_ARRAY_VALUE':
+    case 'redux-form/CHANGE':
+      return Object.assign({}, state, {
+        needRefetch: true
       });
 
     default: 

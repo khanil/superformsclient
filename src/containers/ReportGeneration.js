@@ -1,9 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import { reduxForm } from 'redux-form';
-import sendRequest from '../utils/sendRequest';
+import { download as downloadCSV } from './../utils/CSV';
 import getDataFromNode from './../utils/getDataFromNode';
 import ColumnGeneration from './../components/report/ColumnGeneration';
 import validate from './../utils/reportValidation';
+import { fetchReportCSV } from './../actions/actionsReport';
+import { FETCH_CSV_ERROR, GET_URL_FROM_NODE_ERROR } from './../constants/errors';
 
 const fields = [
   'columns[].questionTitle',
@@ -13,17 +15,22 @@ const fields = [
 
 class ReportGeneration extends Component {
 
-  url;
+  constructor(props) {
+    super(props);
+
+    this.buildReportUrl;
+    this.onSubmitHandler = this.onSubmitHandler.bind(this);
+  }
 
   componentWillMount() {
 
     // Получение адресов API к которым производятся запросы
-    let data = getDataFromNode('info', [ 'postUrl']);
+    let data = getDataFromNode('info', ['buildReportUrl']);
 
     if ( data.fatalError ) {
-      alert('Произошла ошибка при загрузке анкеты. Пожалуйста свяжитесь с техподдержкой.')
+      alert(GET_URL_FROM_NODE_ERROR + 'buildReportUrl');
     } else {
-      this.url = data.postUrl;
+      this.buildReportUrl = data.buildReportUrl;
     }
 
     // Инициализация одного поля генерации вопроса по умолчанию
@@ -32,18 +39,26 @@ class ReportGeneration extends Component {
 
   }
 
-  mySubmit = () => {
-    // values - объект значений формы
-    // url - адрес API на который отправляется форма
-    const values = this.props.values;
-    const url = this.url;
+  onSubmitHandler() {
+    const filename = 'Отчет-' + this.props.formTitle + '.csv';
 
-    const str = JSON.stringify(values, '', 2);
-    console.log(str);
+    if (this.props.needRefetch) {
+      // values - объект значений формы
+      // buildReportUrl - адрес API на который отправляется форма
+      const values = this.props.values;
+      const buildReportUrl = this.buildReportUrl;
 
-    sendRequest('POST', url, str, function (xhr) {
-      console.log(xhr);
-    })
+      const settings = JSON.stringify(values, '', 2);
+      console.log(settings);
+
+      this.props.fetchReportCSVHandler(buildReportUrl, settings,
+        () => ( alert(FETCH_CSV_ERROR) ),
+        (csv) => ( downloadCSV(csv, filename) )
+      );
+    } else {
+      const csv = this.props.csv;
+      downloadCSV(csv, filename);
+    }
   }
 
   render () {
@@ -52,10 +67,9 @@ class ReportGeneration extends Component {
       header,
       fields,
       hideGenerationHandler,
-      handleSubmit
+      handleSubmit,
+      isFetching
     } = this.props;
-
-    const mySubmit = this.mySubmit;
 
     const columns = fields.columns;
 
@@ -79,7 +93,7 @@ class ReportGeneration extends Component {
     ));
 
     return (
-      <form onSubmit={handleSubmit(mySubmit)}>
+      <form onSubmit={handleSubmit(this.onSubmitHandler)}>
         <div className='report-generation-container'>
           <table className='table'>
             <thead>
@@ -105,15 +119,23 @@ class ReportGeneration extends Component {
         </div>
 
         <div className='form-group'>
-          <button type='submit' className='btn btn-default btn-primary col-xs-7'>Выполнить</button>
-          <button type='button' className='btn btn-default col-xs-5' onClick={hideGenerationHandler}>Отмена</button>
+          <button type='submit' className='btn btn-default btn-primary col-xs-7'>
+            {
+              isFetching
+              ? <i className='fa fa-spinner fa-spin'></i>
+              : null
+            }
+            Выполнить
+          </button>
+          <button type='button' className='btn btn-default col-xs-5'
+            onClick={hideGenerationHandler}>
+            Отмена
+          </button>
         </div>
       </form>
 
     );
-
   }
-
 }
 
 ReportGeneration.propTypes = {
@@ -123,8 +145,26 @@ ReportGeneration.propTypes = {
   hideGenerationHandler: PropTypes.func.isRequired
 }
 
+const mapStateToProps = (state) => {
+  return {
+    isFetching: state.report.isFetching,
+    csv: state.report.csv,
+    error: state.report.error,
+    needRefetch: state.report.needRefetch,
+    formTitle: state.table.boilerplate.name
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchReportCSVHandler : (url, settings, onErrorFn, onSuccessFn) => {
+      dispatch( fetchReportCSV(url, settings, onErrorFn, onSuccessFn) );
+    }
+  }
+};
+
 export default reduxForm({
   form: 'reportGeneration',
   fields,
   validate
-})(ReportGeneration);
+}, mapStateToProps, mapDispatchToProps)(ReportGeneration);

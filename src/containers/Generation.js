@@ -63,10 +63,15 @@ class FormGeneration extends Component {
     /*
       TODO: Перенести на сервер ???
       Удаляет пустые поля options перед отправкой
+      Удаляет пустые поля описания вопроса перед отправкой
      */
     values.questions.forEach( (question) => {
       if (question.type !== LIST.value) {
         delete question.options;
+      }
+
+      if ( /^\s+$/.test(question.description) ) {
+        delete question.description;
       }
     });
 

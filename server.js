@@ -193,11 +193,20 @@ app.get('/api/answers/form123', function(req, res) {
     }
 
     var data = JSON.parse(data);
+    data = data[data.length-1];
 
     res.json(data);
     console.log('Send response from /api/forms:');
     console.log(data);
   });
+});
+
+app.post('/api/report/123', function(req, res) {
+  console.log(req.body);
+
+  var data = 'Symbol,Company,Price\nAAPL,Apple Inc.,132.54\nINTC,Intel Corporation,33.45\nGOOG,Google Inc,554.52';
+
+  res.json(data);
 });
 
 

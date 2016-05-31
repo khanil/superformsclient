@@ -26,7 +26,7 @@ class SendForm extends Component {
         <InputContainer
           label='Адреса электронной почты получателей'
           field={recipients}
-          description='Введите адреса e-mail через запятую'
+          description='Необходимо вводить e-mail адреса получателей через запятую.'
           isRequired={true}>
           <InputTextarea field={recipients}/>
         </InputContainer>
