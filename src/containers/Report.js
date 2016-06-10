@@ -7,6 +7,12 @@ import { fetchData, showReportGeneration, hideReportGeneration, toggleDescriptio
 import ReportGeneration from './ReportGeneration';
 import LoadingSpinner from './../components/widgets/LoadingSpinner';
 import { isNumeric } from './../utils/questionTypes';
+import { DATE, TIME } from './../constants/questionTypes';
+
+import Moment from 'moment';
+Moment.locale('ru');
+const formatDate = 'DD/MM/YY';
+const formatTime = 'HH:mm';
 
 class Report extends Component {
 
@@ -27,6 +33,18 @@ class Report extends Component {
 
   }
 
+  cellFormatter = (cell, row, type) => {
+    if (type === DATE.value) {
+      return Moment(cell).format(formatDate);
+    }
+
+    if (type === TIME.value) {
+      return Moment(cell).format(formatTime);
+    }
+
+    return cell;
+  }
+
   render() {
 
     const {
@@ -43,7 +61,7 @@ class Report extends Component {
     } = this.props;
 
     const responsePreviewUrl = this.responsePreviewUrl;
-    // const buildReportUrl = this.buildReportUrl;
+    const cellFormatter = this.cellFormatter;
 
     const numberSort = (a, b, order, sortField) => {
       if ( order === 'desc' ) {
@@ -57,10 +75,14 @@ class Report extends Component {
       const TableColumns = [];
 
       for ( let key in header) {
+        let type = header[key];
+
         TableColumns.push(
           <TableHeaderColumn
             isKey={key === 'Автор'}
             dataField={key}
+            formatExtraData={type}
+            dataFormat={cellFormatter}
             key={key}
             width='300'
             dataSort={isNumeric(header[key]) ? true : false}
@@ -187,6 +209,7 @@ const mapStateToProps = (state) => {
     isDescriptionVisible: state.page.isDescriptionVisible,
     isFetching: state.table.isFetching,
     isGenerationVisible: state.report.isVisible,
+    questions: state.table.boilerplate.questions,
     header: state.table.header,
     answers: state.table.answers,
     formTitle: state.table.boilerplate.name,

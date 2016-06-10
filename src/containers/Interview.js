@@ -72,6 +72,12 @@ class Interview extends Component {
     const url = this.url;
     const redirectUrl = this.redirectUrl;
 
+    // let responsesArray = [];
+    // for (let key in values) {
+    //   let value = values[key];
+    //   responsesArray.push(value);
+    // }
+
     const str = JSON.stringify(values, '', 2);
 
     const onSuccess = () => {

@@ -33,7 +33,7 @@ class ReportHeader extends Component {
   }
 
   onClickHandler() {
-    if (this.props.error) {
+    if (!this.props.csv) {
       this.props.fetchTableCSVHandler(this.buildCSVUrl,
         () => {
           alert(FETCH_CSV_ERROR);

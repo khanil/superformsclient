@@ -7,10 +7,10 @@ module.exports = {
 
    entry: ( NODE_ENV == 'prod') ?
   {
-    // generation: ['babel-polyfill', './src/entries/generation'],
-    // interview: ['babel-polyfill', './src/entries/interview'],
-    // report: ['babel-polyfill', './src/entries/report'],
-    main: ['babel-polyfill', './src/entries/main']
+    //generation: ['babel-polyfill', './src/entries/generation'],
+    interview: ['babel-polyfill', './src/entries/interview']//,
+    //report: ['babel-polyfill', './src/entries/report'],
+    //main: ['babel-polyfill', './src/entries/main']
   }
   :
   [
@@ -18,13 +18,13 @@ module.exports = {
     'babel-polyfill',
     // './src/entries/generation' //Генерация формы
     // './src/entries/interview' //Анкета
-    // './src/entries/report' //Отчет
+    //'./src/entries/report' //Отчет
     './src/entries/main' //Главная страница ( список всех форм)
   ],
 
   output: ( NODE_ENV == 'prod') ? 
   {
-    path: path.join(__dirname, 'dist/scripts'),
+    path: path.join(__dirname, 'dist/scripts/min'),
     filename: '[name].js'
   }
   :
@@ -34,7 +34,7 @@ module.exports = {
     publicPath: '/static/'
   },
 
-  devtool: '#cheap-module-eval-source-map',
+  devtool: null,//'#cheap-module-eval-source-map',
 
   plugins: [
     new webpack.EnvironmentPlugin([

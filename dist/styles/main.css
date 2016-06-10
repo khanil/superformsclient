@@ -54,6 +54,10 @@ body.no-header {
   margin-right: 15px;
 }
 
+#signout {
+  margin-top: 5px;
+}
+
 #root {
   margin-top: 30px;
 }

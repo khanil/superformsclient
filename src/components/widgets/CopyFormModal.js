@@ -79,7 +79,7 @@ class CopyFormModal extends Component {
           {
             (isCopied || copyError) ?
             null :
-            <form role='form'>
+            <form role='form' onSubmit={handleSubmit(mySubmit)}>
 
               <InputContainer
                 label='Название копии формы'
@@ -96,7 +96,7 @@ class CopyFormModal extends Component {
           { 
             (isCopied || copyError) ?
             null :
-            <button type='button' className='btn btn-default btn-primary' onClick={handleSubmit(mySubmit)}>
+            <button type='submit' className='btn btn-default btn-primary' onClick={handleSubmit(mySubmit)}>
               {
                 isCopying ?
                 <i className='fa fa-spinner fa-spin'></i> :

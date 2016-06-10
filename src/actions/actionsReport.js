@@ -87,7 +87,7 @@ export function requestCSV() {
 function fetchTableCSVSuccess(xhr) {
   return {
     type: FETCH_TABLE_CSV_SUCCESS,
-    csv: JSON.parse(xhr.responseText)
+    csv: xhr.responseText
   }
 }
 
@@ -118,7 +118,7 @@ export function fetchTableCSV(url, onErrorFn) {
 function fetchReportCSVSuccess(xhr) {
   return {
     type: FETCH_REPORT_CSV_SUCCESS,
-    csv: JSON.parse(xhr.responseText)
+    csv: xhr.responseText
   }
 }
 
@@ -139,7 +139,7 @@ export function fetchReportCSV(url, settings, onErrorFn, onSuccessFn) {
     sendRequest('POST', url, settings,
       (xhr) => {
         dispatch( fetchReportCSVSuccess(xhr) );
-        if (onSuccessFn) onSuccessFn(JSON.parse(xhr.responseText));
+        if (onSuccessFn) onSuccessFn(xhr.responseText);
       },
       (error) => {
         dispatch( fetchReportCSVFailure(error) );
