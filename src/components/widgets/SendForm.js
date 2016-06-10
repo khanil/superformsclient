@@ -15,18 +15,19 @@ class SendForm extends Component {
         topic,
         message,
         recipients,
+        allowRefill,
         expires,
         expireDate
       }
     } = this.props;
 
     return (
-      <form  method='POST' role='form'>
+      <form  method='POST' role='form' onSubmit={(e) => {e.preventDefault()}}>
 
         <InputContainer
           label='Адреса электронной почты получателей'
           field={recipients}
-          description='Введите адреса e-mail через запятую'
+          description='Необходимо вводить e-mail адреса получателей через запятую.'
           isRequired={true}>
           <InputTextarea field={recipients}/>
         </InputContainer>
@@ -49,6 +50,13 @@ class SendForm extends Component {
 
         <div className='checkbox'>
           <label>
+            <input type='checkbox' {...allowRefill}/>
+            Разрешить повторное заполнение формы?
+          </label>
+        </div>
+
+        <div className='checkbox'>
+          <label>
             <input type='checkbox' {...expires}/>
             Ограничить срок приема ответов?
           </label>
@@ -57,8 +65,8 @@ class SendForm extends Component {
         {
           expires.value
           ? <InputContainer
-            label='Дата окончания приема ответов'
-            field={expireDate}>
+              label='Дата окончания приема ответов'
+              field={expireDate}>
             <InputDatetime
               field={expireDate}
               min={new Date()}/>

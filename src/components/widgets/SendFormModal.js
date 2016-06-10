@@ -16,6 +16,7 @@ class SendFormModal extends Component {
     'topic',
     'message',
     'recipients',
+    'allowRefill',
     'expires',
     'expireDate'
   ];
@@ -42,9 +43,19 @@ class SendFormModal extends Component {
     this.props.sendFormHandler();
     const id = this.props.formId;
 
+    let values = this.props.formValues;
+
+    if (values === undefined){
+      values = {};
+    }
+
+    values.id = id;
+
+    const str = JSON.stringify(values, '', 2);
+
     const adds = this.props.url.replace('id', id);
 
-    sendRequest('POST', adds, null, this.props.sendSuccessHandler, this.props.sendFailHandler);
+    sendRequest('POST', adds, str, this.props.sendSuccessHandler, this.props.sendFailHandler);
   }
 
   render() {
@@ -126,6 +137,9 @@ class SendFormModal extends Component {
               fields={this.fields}
             /> :
             <PublishForm
+              ref='publishForm'
+              onSubmit={this.publishHandler}
+              fields={this.fields}
               formId={formId}
             />
           }

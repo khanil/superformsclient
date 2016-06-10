@@ -54,10 +54,8 @@ body.no-header {
   margin-right: 15px;
 }
 
-@media (max-width: 992px) {
-  #page-header {
-    height: 130px;
-  }
+#signout {
+  margin-top: 5px;
 }
 
 #root {
@@ -143,7 +141,7 @@ table .form-group {
 }
 
 .report-header .btn-tip {
-  margin-top: -30px;
+  margin-top: -20px;
 }
 
 /*Список всех форм*/
@@ -198,4 +196,8 @@ table .form-group {
 .btn-tip i {
   padding-left: 2px;
   padding-right: 2px;
+}
+
+.dropdown-toggle span:first-child {
+  margin-right: 2px;
 }

@@ -30,12 +30,6 @@ class InputContainer extends Component {
       children
     } = this.props;
 
-    const labelNode = (label)
-      ? <label htmlFor={field.name} className='control-label'>
-          {label + ( (isRequired) ? '*' : '') }
-        </label>
-      : null;
-
     const errorNode = (field.touched && field.error)
       ? <div className='help-block'>{field.error}</div>
       : null;
@@ -50,19 +44,27 @@ class InputContainer extends Component {
       tipVisible
     } = this.state;
 
-    const descriptionBtn = description
-    ? <button
-        type='button'
-        className='btn btn-info btn-xs btn-tip'
-        onClick={this.toggleTipVisibilityHandler}>
-        <i className='fa fa-info' aria-hidden='true'></i>
-      </button>
-    : null;
+    const descriptionBtn = 
+      (description)
+      ? <button
+          type='button'
+          className='btn btn-info btn-xs btn-tip'
+          onClick={this.toggleTipVisibilityHandler}>
+          <i className='fa fa-info' aria-hidden='true'></i>
+        </button>
+      : null;
+
+    const labelNode = 
+      (label)
+      ? <label htmlFor={field.name} className='control-label'>
+          {label + ( (isRequired) ? '*' : '') }
+          {descriptionBtn}
+        </label>
+      : null;
 
     return (
       <div className={'form-group ' + validationClass}>
         {labelNode}
-        {descriptionBtn}
         {
           tipVisible ?
           <p className='bg-info'>

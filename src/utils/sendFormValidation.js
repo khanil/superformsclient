@@ -13,7 +13,7 @@ const validate = ({
   if (isEmpty(recipients)) {
     errors.recipients = errorLabels.EMPTY;
   } else {
-    if ( !/^(\s*([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}($|\s|[,]))+$/.test(recipients) ) {
+    if ( !/^(\s*([a-zA-Z0-9_-]+\.)*[a-zA-Z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}($|\s|[,]))+$/.test(recipients) ) {
       errors.recipients = errorLabels.EMAIL_STRING_INVALID;
     }
   }

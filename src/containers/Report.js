@@ -3,10 +3,16 @@ import { connect } from 'react-redux';
 import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 import getDataFromNode from './../utils/getDataFromNode';
-import { fetchData, showReportGeneration, hideReportGeneration, toggleDescription } from './../actions/actionsReport';
+import { fetchData, showReportGeneration, hideReportGeneration, toggleDescription} from './../actions/actionsReport';
 import ReportGeneration from './ReportGeneration';
 import LoadingSpinner from './../components/widgets/LoadingSpinner';
 import { isNumeric } from './../utils/questionTypes';
+import { DATE, TIME } from './../constants/questionTypes';
+
+import Moment from 'moment';
+Moment.locale('ru');
+const formatDate = 'DD/MM/YY';
+const formatTime = 'HH:mm';
 
 class Report extends Component {
 
@@ -22,8 +28,21 @@ class Report extends Component {
       //Запрос шаблона формы с сервера
       this.props.fetchDataHandler(data.getUrl);
       this.responsePreviewUrl = data.responsePreviewUrl;
+      this.buildCSVUrl = data.buildCSVUrl;
     }
 
+  }
+
+  cellFormatter = (cell, row, type) => {
+    if (type === DATE.value) {
+      return Moment(cell).format(formatDate);
+    }
+
+    if (type === TIME.value) {
+      return Moment(cell).format(formatTime);
+    }
+
+    return cell;
   }
 
   render() {
@@ -42,6 +61,7 @@ class Report extends Component {
     } = this.props;
 
     const responsePreviewUrl = this.responsePreviewUrl;
+    const cellFormatter = this.cellFormatter;
 
     const numberSort = (a, b, order, sortField) => {
       if ( order === 'desc' ) {
@@ -55,11 +75,16 @@ class Report extends Component {
       const TableColumns = [];
 
       for ( let key in header) {
+        let type = header[key];
+
         TableColumns.push(
           <TableHeaderColumn
             isKey={key === 'Автор'}
             dataField={key}
+            formatExtraData={type}
+            dataFormat={cellFormatter}
             key={key}
+            width='300'
             dataSort={isNumeric(header[key]) ? true : false}
             sortFunc={isNumeric(header[key]) ? numberSort : null}
           >
@@ -79,8 +104,21 @@ class Report extends Component {
     }
 
     const optionsProp = {
-      onRowClick: onRowClickHandler
+      onRowClick: onRowClickHandler,
+      noDataText: 'Ответов еще нет'
     }
+
+    if (isGenerationVisible) {
+      window.onbeforeunload = function() {
+        return 'Вы находитесь на стадии формирования отчета.';
+      };
+    } else {
+      window.onbeforeunload = null;
+    }
+
+    const getTableHeight = () => (
+      window.screen.height - 350 + ''
+    );
 
     return (
       <div>
@@ -96,7 +134,9 @@ class Report extends Component {
 
         <div>
           <div className='report-header'>
-            <h1>{formTitle}</h1>
+            <h1>
+
+            {formTitle}
 
             {
               (formDescription !== undefined && formDescription !== '')
@@ -114,6 +154,8 @@ class Report extends Component {
               : null
             }
 
+            </h1>
+
             {
               (isDescriptionVisible) ?
               <blockquote>{formDescription}</blockquote> :
@@ -126,7 +168,7 @@ class Report extends Component {
               data={answers}
               striped={true}
               hover={true}
-              height={(!isGenerationVisible) ? '420' : '255'}
+              height={(!isGenerationVisible) ? getTableHeight() : getTableHeight() - 165 + ''}
               options={optionsProp}>
               { renderTableColumns() }
             </BootstrapTable>
@@ -143,7 +185,13 @@ class Report extends Component {
             />
 
             :
-            <button type='button' className='btn btn-default' onClick={showGenerationHandler}>Создать отчет</button>
+            <button
+              type='button'
+              className='btn btn-default'
+              onClick={showGenerationHandler}
+              disabled={(answers.length > 0) ? null : 'disabled'}>
+              Создать отчет
+            </button>
           }
 
         </div>
@@ -158,13 +206,14 @@ class Report extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isDescriptionVisible: state.report.isDescriptionVisible,
-    isFetching: state.report.isFetching,
-    isGenerationVisible: state.report.isGenerationVisible,
-    header: state.report.header,
-    answers: state.report.answers,
-    formTitle: state.report.boilerplate.name,
-    formDescription: state.report.boilerplate.description
+    isDescriptionVisible: state.page.isDescriptionVisible,
+    isFetching: state.table.isFetching,
+    isGenerationVisible: state.report.isVisible,
+    questions: state.table.boilerplate.questions,
+    header: state.table.header,
+    answers: state.table.answers,
+    formTitle: state.table.boilerplate.name,
+    formDescription: state.table.boilerplate.description
   }
 }
 

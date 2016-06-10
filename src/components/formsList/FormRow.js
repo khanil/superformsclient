@@ -3,8 +3,10 @@ import UnsentFormButtons from './UnsentFormButtons';
 import SentFormButtons from './SentFormButtons';
 import MultyPurposeButtons from './MultyPurposeButtons';
 import * as formTypes from './../../constants/formTypes';
+import * as DATE_TO_DISPLAY from './../../constants/displayingDateTypes';
 import moment from 'moment';
 moment.locale('ru');
+const format = 'DD/MM/YY HH:mm';
 
 class FormRow extends Component {
 
@@ -50,6 +52,7 @@ class FormRow extends Component {
       toggleCopyModal,
       showDeleteModal,
       showStatusModal,
+      displayingDate,
       form: {
         id,
         name,
@@ -70,9 +73,15 @@ class FormRow extends Component {
       <td>{formTypes[type.toUpperCase()].label}</td>
       <td>
         {
-          edited ?
-          moment(edited).format('DD/MM/YY HH:mm') :
-          moment(created).format('DD/MM/YY HH:mm')
+          displayingDate === DATE_TO_DISPLAY.SENT
+          ? sent 
+            ? moment(sent).format(format)
+            : 'Не отправлено'
+          : displayingDate === DATE_TO_DISPLAY.EDITED
+            ? edited
+              ? moment(edited).format(format)
+              : 'Не редактировалось'
+            : moment(created).format(format)
         }
       </td>
       <td>
