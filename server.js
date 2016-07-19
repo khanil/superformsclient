@@ -29,7 +29,7 @@ if (NODE_ENV == 'dev') {
 
   app.use(webpackDevMiddleware(compiler, {
     noInfo: true,
-    publicPath: config.output.publicPath
+    publicPath: config.output.path
   }));
   /* 
    * сервер теперь принимает уведомления, когда главный js скрипт собран 
@@ -38,176 +38,176 @@ if (NODE_ENV == 'dev') {
   app.use(webpackHotMiddleware(compiler));
 }
 
-app.get("/home", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/index.html');
-});
+// app.get("/home", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/index.html');
+// });
 
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/index.html');
-});
+// app.get("/", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/index.html');
+// });
 
-app.get("/signin", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/signIn.html');
-});
+// app.get("/signin", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/signIn.html');
+// });
 
-app.get("/signup", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/signUp.html');
-});
+// app.get("/signup", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/signUp.html');
+// });
 
-app.get("/generation", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/generation.html');
-});
+// app.get("/generation", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/generation.html');
+// });
 
-app.get("/report", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/report.html');
-});
+// app.get("/report", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/report.html');
+// });
 
-app.get("/interview", function(req, res) {
-  res.sendFile(__dirname + '/dist/views/interview.html');
-});
+// app.get("/interview", function(req, res) {
+//   res.sendFile(__dirname + '/dist/views/interview.html');
+// });
 
-var FORMS_FILE = path.join(__dirname, 'forms.json');
+// var FORMS_FILE = path.join(__dirname, 'forms.json');
 
-app.get('/api/forms', function(req, res) {
+// app.get('/api/forms', function(req, res) {
 
-  console.log('Get query to /api/forms.');
+//   console.log('Get query to /api/forms.');
 
-  fs.readFile(FORMS_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(FORMS_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var data = JSON.parse(data);
+//     var data = JSON.parse(data);
 
-    var boilerplate = data[0];
+//     var boilerplate = data[0];
 
-    res.json(boilerplate);
-    console.log('Send response from /api/forms:');
-    console.log(boilerplate);
-  });
-});
+//     res.json(boilerplate);
+//     console.log('Send response from /api/forms:');
+//     console.log(boilerplate);
+//   });
+// });
 
-app.post('/api/forms', function(req, res) {
-  console.log(req.body);
+// app.post('/api/forms', function(req, res) {
+//   console.log(req.body);
 
-  fs.readFile(FORMS_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(FORMS_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var boilerplate = JSON.parse(data);
-    // NOTE: In a real implementation, we would likely rely on a database or
-    // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
-    // treat Date.now() as unique-enough for our purposes.
-    var newBoilerplate = req.body;
-    boilerplate.push(newBoilerplate);
+//     var boilerplate = JSON.parse(data);
+//     // NOTE: In a real implementation, we would likely rely on a database or
+//     // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
+//     // treat Date.now() as unique-enough for our purposes.
+//     var newBoilerplate = req.body;
+//     boilerplate.push(newBoilerplate);
 
-    fs.writeFile(FORMS_FILE, JSON.stringify(boilerplate, null, 4), function(err) {
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      }
+//     fs.writeFile(FORMS_FILE, JSON.stringify(boilerplate, null, 4), function(err) {
+//       if (err) {
+//         console.error(err);
+//         process.exit(1);
+//       }
 
-      var id = "12";
+//       var id = "12";
 
-      res.json(id);
-    });
-  });
-});
+//       res.json(id);
+//     });
+//   });
+// });
 
-app.get('/api/forms/all', function(req, res) {
+// app.get('/api/forms/all', function(req, res) {
 
-  console.log('Get query to /api/forms/all.');
+//   console.log('Get query to /api/forms/all.');
 
-  fs.readFile(FORMS_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(FORMS_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var data = JSON.parse(data);
+//     var data = JSON.parse(data);
 
-    res.json(data);
-    console.log('Send response from /api/forms:');
-  });
-});
+//     res.json(data);
+//     console.log('Send response from /api/forms:');
+//   });
+// });
 
-var ANSWERS_FILE = path.join(__dirname, 'answers.json');
+// var ANSWERS_FILE = path.join(__dirname, 'answers.json');
 
-app.get('/api/answers', function(req, res) {
-  console.log('Get query to /api/answers.');
+// app.get('/api/answers', function(req, res) {
+//   console.log('Get query to /api/answers.');
 
-  fs.readFile(ANSWERS_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(ANSWERS_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var data = JSON.parse(data);
-    data = data[data.length-1];
+//     var data = JSON.parse(data);
+//     data = data[data.length-1];
 
-    res.json(data);
-    console.log('Send response from /api/forms:');
-  });
-});
+//     res.json(data);
+//     console.log('Send response from /api/forms:');
+//   });
+// });
 
-app.post('/api/answers', function(req, res) {
-  console.log(req.body);
-  res.sendStatus(200);
+// app.post('/api/answers', function(req, res) {
+//   console.log(req.body);
+//   res.sendStatus(200);
 
-  fs.readFile(ANSWERS_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(ANSWERS_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var comments = JSON.parse(data);
-    // NOTE: In a real implementation, we would likely rely on a database or
-    // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
-    // treat Date.now() as unique-enough for our purposes.
-    var newAnswer = req.body;
-    comments.push(newAnswer);
+//     var comments = JSON.parse(data);
+//     // NOTE: In a real implementation, we would likely rely on a database or
+//     // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
+//     // treat Date.now() as unique-enough for our purposes.
+//     var newAnswer = req.body;
+//     comments.push(newAnswer);
 
-    fs.writeFile(ANSWERS_FILE, JSON.stringify(comments, null, 4), function(err) {
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      }
-      // res.json(comments);
-    });
-  });
-});
+//     fs.writeFile(ANSWERS_FILE, JSON.stringify(comments, null, 4), function(err) {
+//       if (err) {
+//         console.error(err);
+//         process.exit(1);
+//       }
+//       // res.json(comments);
+//     });
+//   });
+// });
 
-var ANSWER_FILE = path.join(__dirname, 'answer.json');
+// var ANSWER_FILE = path.join(__dirname, 'answer.json');
 
-app.get('/api/answers/form123', function(req, res) {
+// app.get('/api/answers/form123', function(req, res) {
 
-  console.log('Get query to /api/answers/form123.');
+//   console.log('Get query to /api/answers/form123.');
 
-  fs.readFile(ANSWER_FILE, function(err, data) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
-    }
+//   fs.readFile(ANSWER_FILE, function(err, data) {
+//     if (err) {
+//       console.error(err);
+//       process.exit(1);
+//     }
 
-    var data = JSON.parse(data);
-    data = data[data.length-1];
+//     var data = JSON.parse(data);
+//     data = data[data.length-1];
 
-    res.json(data);
-    console.log('Send response from /api/forms:');
-    console.log(data);
-  });
-});
+//     res.json(data);
+//     console.log('Send response from /api/forms:');
+//     console.log(data);
+//   });
+// });
 
-app.post('/api/report/123', function(req, res) {
-  console.log(req.body);
+// app.post('/api/report/123', function(req, res) {
+//   console.log(req.body);
 
-  var data = 'Symbol,Company,Price\nAAPL,Apple Inc.,132.54\nINTC,Intel Corporation,33.45\nGOOG,Google Inc,554.52';
+//   var data = 'Symbol,Company,Price\nAAPL,Apple Inc.,132.54\nINTC,Intel Corporation,33.45\nGOOG,Google Inc,554.52';
 
-  res.json(data);
-});
+//   res.json(data);
+// });
 
 
 app.listen(port, function(error) {
