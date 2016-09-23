@@ -12,13 +12,5 @@ export default function configureStore(initialState, rootReducer) {
       window.devToolsExtension ? window.devToolsExtension() : f => f
     )
   );
-
-  if (module.hot) {
-    module.hot.accept(rootReducer, () => {
-      const nextRootReducer = require(rootReducer);
-      store.replaceReducer(nextRootReducer);
-    });
-  }
-
   return store;
 }
