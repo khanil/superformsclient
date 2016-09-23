@@ -1,6 +1,6 @@
 /*
-  Типы генерируемых вопросов
-  Массив всех типов - ALL_TYPES_ARRAY
+  Типы генерируемых форм
+  Массив всех типов - ALL
  */
 
 export const MONITORING = {
@@ -23,6 +23,16 @@ export const SURVEY = {
   label: 'Анкетирование'
 }
 
-export const ALL_TYPES_ARRAY = [
-  SURVEY, VOTING, MONITORING, INTERVIEW
+export const REQUEST = {
+  value: 'request',
+  label: 'Запрос'
+}
+
+export const OTHER = {
+  value: 'other',
+  label: 'Другое'
+}
+
+export const ALL = [
+  SURVEY, VOTING, REQUEST, MONITORING, INTERVIEW, OTHER
 ];

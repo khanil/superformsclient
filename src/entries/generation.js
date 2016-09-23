@@ -1,23 +1,25 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import Generation from './../containers/Generation';
-import Header from './../containers/headers/Generation';
-import configureStore from './../store/configureStore';
-import rootReducer from './../reducers/generation';
+import configureStore from '../store/configureStore'
+
+import FormGeneratonApp from '../containers/FormGenerationApp';
+
+import { combineReducers } from 'redux';
+import { formData, modal } from '../reducers';
+import { forms } from 'react-super-forms';
+
+const rootReducer = combineReducers({
+  formData,
+  forms,
+  modal
+});
 
 const store = configureStore({}, rootReducer);
 
 render(
   <Provider store={store}>
-    <Header />
-  </Provider>,
-  document.getElementById('header-root')
-);
-
-render(
-  <Provider store={store}>
-    <Generation />
+    <FormGeneratonApp/>
   </Provider>,
   document.getElementById('root')
 );
