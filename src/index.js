@@ -1,10 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
-import ReactDOM from 'react-dom';
-import App from './App';
-
-ReactDOM.render(<App />, document.getElementById('root'));
-=======
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import FormGeneratonApp from './containers/FormGenerationApp';
@@ -21,4 +15,3 @@ render(
   </Provider>,
   document.getElementById('root')
 );
->>>>>>> c9c80e5755216cfee265986d3e5ab7ce3ef21e7d
