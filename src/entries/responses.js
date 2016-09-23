@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import configureStore from '../store/configureStore'
 
-import FormInterviewApp from '../containers/FormInterviewApp';
+import ResponsesTableApp from '../containers/ResponsesTableApp';
 
 import { combineReducers } from 'redux';
 import { formData, modal } from '../reducers';
@@ -19,7 +19,7 @@ const store = configureStore({}, rootReducer);
 
 render(
   <Provider store={store}>
-    <FormInterviewApp/>
+    <ResponsesTableApp/>
   </Provider>,
   document.getElementById('root')
 );
