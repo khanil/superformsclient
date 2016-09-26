@@ -201,3 +201,12 @@ table .form-group {
 .dropdown-toggle span:first-child {
   margin-right: 2px;
 }
+
+/*Table*/
+.th_sort_asc .fa{
+  padding-top: 5px;
+}
+
+.th_sort_desc .fa{
+
+}
