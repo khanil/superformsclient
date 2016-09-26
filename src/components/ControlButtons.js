@@ -9,6 +9,10 @@ export default class ControlButtons extends Component {
     bindFunctions.call(this, []);
   }
 
+  static get className() {
+    return 'form-control-buttons';
+  }
+
   getButtonsForSentForm() {
     const {
       showStatus,
@@ -17,8 +21,8 @@ export default class ControlButtons extends Component {
 
     return (
       <div className='btn-group'>
-        <ButtonGlyphicon icon='stats' onClick={showStatus} />
-        <ButtonGlyphicon icon='list-alt' onClick={showResponses} />
+        <ButtonGlyphicon icon='link' onClick={showStatus} title='Просмотр ссылки'/>
+        <ButtonGlyphicon icon='list-alt' onClick={showResponses} title='Просмотр ответов'/>
       </div>
     );
   }
@@ -31,8 +35,8 @@ export default class ControlButtons extends Component {
 
     return (
       <div className='btn-group'>
-        <ButtonGlyphicon icon='send' onClick={send} />
-        <ButtonGlyphicon icon='pencil' onClick={edit} />
+        <ButtonGlyphicon icon='send' onClick={send} title='Отправить'/>
+        <ButtonGlyphicon icon='pencil' onClick={edit} title='Редактировать'/>
       </div>
     );
   }
@@ -45,14 +49,14 @@ export default class ControlButtons extends Component {
     } = this.props;
 
     return (
-      <div className='btn-group'>
+      <div className={`btn-group ${this.constructor.className}`}>
         {
           isFormSent ?
           this.getButtonsForSentForm() :
           this.getButtonsForUnsentForm()
         }
-        <ButtonGlyphicon icon='duplicate' onClick={copy}/>
-        <ButtonGlyphicon icon='trash' onClick={remove}/>
+        <ButtonGlyphicon icon='duplicate' onClick={copy} title='Скопировать'/>
+        <ButtonGlyphicon icon='trash' onClick={remove} title='Удалить'/>
       </div>
     );
   }

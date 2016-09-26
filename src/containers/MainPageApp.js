@@ -6,10 +6,67 @@ import { bindFunctions } from '../utils';
 import { fetchForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
 import { removeFMConfig, copyFMConfig, statusFMConfig } from '../config';
 import { modalTypes } from '../constants';
+import Table from '../components/Table/Table';
+import faker from 'faker';
+import { formTypes } from '../constants';
+import ControlButtons from '../components/ControlButtons';
+
+import Moment from 'moment';
+Moment.locale('ru');
+import momentLocalizer from 'react-widgets/lib/localizers/moment';
+momentLocalizer(Moment);
+const dateFormat = 'DD.MM.YYYY';
+const timeFormat = 'HH:mm';
 
 export default class MainPageApp extends AppComponent {
   constructor(props) {
     super(props);
+
+    this.myColumns = [
+      {
+        key: 'index',
+        title: '#'
+      },
+      {
+        key: 'title',
+        title: 'Название'
+      },
+      {
+        key: 'type',
+        title: 'Тип',
+        renderCell: (value) => (formTypes[value.toUpperCase()].label),
+        sortFn: (a, b) => {
+          const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
+          if (a_label > b_label) return 1;
+          if (a_label < b_label) return -1;
+        }
+      },
+      {
+        key: 'created',
+        title: 'Создано',
+        renderCell: (value) => (Moment(value).format(`${dateFormat} ${timeFormat}`)),
+        sortFn: (a, b) => {
+          const values = [a, b].map((v) => Moment(v).valueOf());
+          return (values[0] - values[1]);
+        }
+      },
+      {
+        key: 'control',
+        title: '',
+        renderCell: (value, data) => (
+          <ControlButtons
+            isFormSent={data.sent !== null}
+            edit={this.redirectToEditPage.bind(null, data.id)}
+            showStatus={this.showStatus.bind(null, data.id, data.title)}
+            showResponses={this.redirectToResponsesPage.bind(null, data.id)}
+            remove={this.remove.bind(null, data.id)}
+            copy={this.copy.bind(null, data.id, data.title)}
+            send={this.send.bind(null, data.id)}
+          />
+        ),
+        sort: false
+      }
+    ];
 
     bindFunctions.call(this, ['redirectToResponsesPage', 'redirectToEditPage',
       'redirectToPreviewPage', 'remove', 'copy', 'send', 'showStatus']);
@@ -93,21 +150,32 @@ export default class MainPageApp extends AppComponent {
     if (forms === undefined)
       return null;
 
-    const tableProps = {
-      forms,
-      showResponses: this.redirectToResponsesPage,
-      editForm: this.redirectToEditPage,
-      previewForm: this.redirectToPreviewPage,
-      removeForm: this.remove,
-      copyForm: this.copy,
-      sendForm: this.send,
-      showStatus: this.showStatus
-    }
-
     return (
       <div>
         <h3>Созданные формы:</h3>
-        <FormsTable {...tableProps}/>
+        <Table
+          columns={this.myColumns}
+          data={forms.toJS()}
+          name='form-list'
+          number={false}
+          onRowClick={(e, data) => {
+            let target = e.target;
+
+            console.log(target.classList);
+
+            while (target.classList.contains(Table.classes.TABLE) === false) {
+              console.log(target.className);
+
+              if (target.classList.contains(ControlButtons.className)) {
+                // нашли элемент, который нас не интересует!
+                return;
+              }
+              target = target.parentNode;
+            }
+
+            this.redirectToPreviewPage(data.id);
+          }}
+        />
         {super.render()}
       </div>
     );

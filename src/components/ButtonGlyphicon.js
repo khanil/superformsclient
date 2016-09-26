@@ -9,11 +9,16 @@ export default class ButtonGlyphicon extends Component {
     const type = this.props.type || 'default'
     const {
       icon,
-      onClick
+      onClick,
+      title
     } = this.props;
 
     return (
-      <button type="button" className={`btn btn-${type}`} onClick={onClick}>
+      <button
+        className={`btn btn-${type}`}
+        onClick={onClick}
+        title={title}
+        type="button">
           <span className={`glyphicon glyphicon-${icon}`} aria-hidden='true'></span>
       </button>
     );
