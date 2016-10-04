@@ -1,36 +1,44 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes as PT } from 'react';
 import invariant from 'invariant';
+import shallowCompare from 'react-addons-shallow-compare';
 import Header from './Header';
 import Row from './Row';
 import Cell from './Cell';
+import Dropdown from './Dropdown';
 import * as BEM from './classes';
 
+/** Table component */
 export default class Table extends Component {
   constructor(props) {
     super(props);
 
+    /**
+     * @param {Array} columns Table columns
+     * @param {Object} data Table data
+     * @param {string} sortField Field using for sort
+     */
     this.state = {
+      columns: [],
       data: this.props.data,
-      empty: undefined,
-      sortBy: null
+      sortDir: null,
+      sortField: null
     }
 
+    this.setColumns = this.setColumns.bind(this);
     this.sort = this.sort.bind(this);
   }
 
-  static get classes() {
-    return BEM;
-  }
-
+  /**
+   * Returns empty row
+   * @return {Object} React component
+   */
   buildEmptyRow() {
     const length = this.props.columns.length;
-    const value = this.props.emptyDataMessage ||
-                  'Отсутствуют данные';
+    const value = this.props.emptyDataMessage || 'Отсутствуют данные';
 
     return (
       <Row classes={`${BEM.ROW_EMPTY}`}>
         <Cell
-          classes={''}
           colSpan={length}
           value={value}
         />
@@ -38,17 +46,18 @@ export default class Table extends Component {
     );
   }
 
+  /**
+   * Returns table rows based on data
+   * @return {Array} React components
+   */
   buildRows() {
     const {
-      columns,
-      number,
       onRowClick,
       rowClasses,
     } = this.props;
-
     const data = this.state.data;
 
-    if (this.state.empty)
+    if ( this.isDataEmpty(data) )
       return this.buildEmptyRow();
 
     invariant(
@@ -58,86 +67,146 @@ export default class Table extends Component {
 
     return data.map((chunk, i) => (
       <Row
+        columns={this.state.columns}
         classes={rowClasses}
         data={chunk}
         key={chunk.id}
         onRowClick={onRowClick}
-        rowN={i}
       >
-        {this.buildRowCells(i, chunk)}
       </Row>
     ));
   }
 
-  buildRowCells(rowN, data) {
-    const {
-      columns,
-      number
-    } = this.props;
-    const cells = [];
-
-    if (number) {
-      cells.push(<Cell key={`${data.id}__#_`} value={rowN + 1} />);
-    }
-
-    cells.push(
-      columns.map((col) => {
-        const { key } = col;
-
-        return (
-          <Cell
-            classes={col.cellClasses}
-            data={data}
-            key={`${data.id}_${key}`}
-            renderCell={col.renderCell}
-            value={data[key]}
-          />
-        );
-      })
-    );
-
-    return cells;
+  /**
+   * Get Table component CSS classes
+   * @return {Object} BEM classes Object
+   */
+  static get classes() {
+    return BEM;
   }
 
-  sort(field, sortFn) {
-    this.setState((state) => ({
-      //checks if already sorted by given field
-      data: (state.sortBy !== field) ? state.data.sort((a, b) => sortFn(a[field], b[field]))
-                                     : state.data.reverse(),
-      sortBy: field
-    }));
+  /**
+   * Checks is data empty
+   * @param  {Array}  data Table data
+   * @return {Boolean}
+   */
+  isDataEmpty(data) {
+    return (data === undefined || data === null || data.length === 0);
   }
 
-  componentWillMount() {
-    const data = this.props.data;
-    if (data === undefined || data === null || data.length === 0) {
-      this.setState({
-        empty: true
-      });
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const data = nextProps.data;
-    const isEmpty = (data === undefined || data === null || data.length === 0);
-
+  /**
+   * Sets columns to state
+   * Using for communication between children and current store
+   * @param {Array} columns Columns for assign
+   */
+  setColumns(columns) {
     this.setState({
-      data,
-      empty: isEmpty ? true : false
+      columns
     });
   }
 
+  /**
+   * Sorts table rows
+   * @param  {string} field  Column key using for sort
+   * @param  {function} sortFn Sorting function
+   */
+  sort(field, sortFn) {
+    const sortField = this.state.sortField;
+    const dataCopy = this.state.data.slice();
+    let sortDir;
+
+    if (sortField !== field) {
+      dataCopy.sort((a, b) => sortFn(a[field], b[field]));
+      sortDir = 'desc';
+    } else {
+      dataCopy.reverse();
+      sortDir = this.state.sortDir === 'asc' ? 'desc' : 'asc';
+    }
+
+    this.setState({
+      data: dataCopy,
+      sortField: field,
+      sortDir
+    });
+  }
+
+  findSortFn(field) {
+    const columns = this.props.columns;
+    for (let i = 0; i < columns.length; i++) {
+      if (columns[i].key === field) {
+        return columns[i].sortFn;
+      }
+
+      if (Array.isArray(columns[i])) {
+        for (let j = 0; j < columns[i].length; j++) {
+          if (columns[i][j].key === field) {
+            return columns[i][j].sortFn;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  componentWillMount() {
+    const defaultSortBy = this.props.defaultSortBy;
+    const data = this.state.data;
+
+    if (defaultSortBy) {
+      const sortFn = this.findSortFn(defaultSortBy);
+      console.log(Header.defaultSortBy);
+      this.sort(defaultSortBy, sortFn ? sortFn : Header.sortFnDefault);
+    }
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (this.props.data !== nextProps.data) {
+      this.setState({
+        data: nextProps.data
+      })
+    };
+  }
+
+  componentWillUpdate() {
+    console.time('table');
+  }
+
+  componentDidUpdate() {
+    console.timeEnd('table');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const update = shallowCompare(this, nextProps, nextState);
+    return update;
+  }
+
   render() {
+    const {
+      columns,
+      defaultSortBy,
+      name,
+      showSerial
+    } = this.props;
+
+    const {
+      sortDir,
+      sortField
+    } = this.state;
+
+    const tName = name ? `${BEM.TABLE}_name_${name}` : '';
+    const wrapperClass = `${BEM.TABLE} table-responsive ${tName}`;
+
     return (
-      <div className={`${BEM.TABLE} table-responsive ` + (this.props.name ?
-                                                         `${BEM.TABLE}_name_${this.props.name}` :
-                                                         '')}>
+      <div className={wrapperClass}>
         <table className='table table-hover table-bordered'>
           <Header
-            columns={this.props.columns}
-            number={this.props.number}
-            sort={!this.state.empty ? this.sort : undefined}
-            sortBy={this.state.sortBy}
+            columns={columns}
+            defaultSortBy={defaultSortBy}
+            showSerial={showSerial}
+            setColumns={this.setColumns}
+            sort={this.sort}
+            sortDir={sortDir}
+            sortField={sortField}
           />
           <tbody className={`${BEM.BODY}`}>
             {this.buildRows()}
@@ -147,3 +216,59 @@ export default class Table extends Component {
     );
   }
 }
+
+Table.propTypes = {
+  columns: PT.arrayOf(
+    PT.oneOfType([
+      PT.shape({
+        key: PT.string.isRequired,
+        title: PT.string.isRequired,
+        renderCell: PT.func,
+        sortFn: PT.func
+      }),
+      PT.arrayOf(
+        PT.shape({
+          key: PT.string.isRequired,
+          title: PT.string.isRequired,
+          renderCell: PT.func,
+          sortFn: PT.func
+        })
+      )
+    ])
+  ),
+  data: PT.array.isRequired,
+  defaultSortBy: PT.string,
+  name: PT.string,
+  showSerial: PT.bool,
+  onRowClick: PT.func
+}
+
+/**
+   * Returns row cells based on data chunk
+   * @param  {number} serial Table row serial number
+   * @param  {Object} data Data chunk
+   * @return {Array}  React components
+   */
+  // buildRowCells(data) {
+  //   const columns = this.state.columns;
+  //   const cells = [];
+
+  //   cells.push(
+  //     columns.map((col) => {
+  //       const { key } = col;
+
+  //       return (
+  //         <Cell
+  //           classes={col.cellClasses}
+  //           data={data}
+  //           id={key}
+  //           key={`${data.id}_${key}`}
+  //           renderCell={col.renderCell}
+  //           value={data[key]}
+  //         />
+  //       );
+  //     })
+  //   );
+
+  //   return cells;
+  // }

@@ -2,39 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import * as BEM from './classes';
 import shallowCompare from 'react-addons-shallow-compare';
 import invariant from 'invariant';
-import Cell from './Cell';
 
 /** Table row component */
 export default class Row extends Component {
   constructor(props) {
     super(props);
     this.clickHandler = this.clickHandler.bind(this);
-  }
-
-  /**
-   * Returns row cells based on data chunk
-   * @return {Array}  React components
-   */
-  buildRowCells() {
-    const {
-      columns,
-      data
-    } = this.props;
-
-    return columns.map((col) => {
-      const { key } = col;
-
-      return (
-        <Cell
-          classes={col.cellClasses}
-          data={data}
-          id={key}
-          key={`${data.id}_${key}`}
-          renderCell={col.renderCell}
-          value={data[key]}
-        />
-      );
-    });
   }
 
   clickHandler(e) {
@@ -63,7 +36,7 @@ export default class Row extends Component {
     //   console.log(`${key} ${equal}`);
     // }
     // console.log('--------');
-    // console.log('row update? ' + update);
+    console.log('row update? ' + update);
     return update;
   }
 
@@ -80,18 +53,13 @@ export default class Row extends Component {
         className={`${BEM.ROW} ${classes} ${clickableClass}`}
         onClick={clickable ? this.clickHandler : null}
       >
-        {
-          this.props.children ?
-          this.props.children :
-          this.buildRowCells()
-        }
+        {this.props.children}
       </tr>
     );
   }
 }
 
 Row.propTypes = {
-  columns: PropTypes.array,
   classes: PropTypes.string,
   data: PropTypes.object,
   onRowClick: PropTypes.func

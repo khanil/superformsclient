@@ -80,7 +80,7 @@ export const sendDeleteFormSuccess = makeActionCreator(SEND_DELETE_FORM_SUCCESS,
 export const sendDeleteFormFailure = makeActionCreator(SEND_DELETE_FORM_FAILURE, 'response', 'formId');
 
 export const sendCopyFormInit = makeActionCreator(SEND_COPY_FORM, 'url', 'formId', 'copyName');
-export const sendCopyFormSuccess = makeActionCreator(SEND_COPY_FORM_SUCCESS, 'formId', 'copyName', 'copyId');
+export const sendCopyFormSuccess = makeActionCreator(SEND_COPY_FORM_SUCCESS, 'formId', 'copyName', 'copyId', 'copyIndex');
 export const sendCopyFormFailure = makeActionCreator(SEND_COPY_FORM_FAILURE, 'response', 'formId');
 
 export const sendFormInit = makeActionCreator(SEND_FORM, 'url', 'config');
@@ -278,7 +278,11 @@ export function sendCopyForm(url, formId, name) {
 			if (xhr.status != 200) {
 				dispatch( sendCopyFormFailure(xhr.response, formId) );
 			} else {
-				dispatch( sendCopyFormSuccess(formId, name, xhr.responseText) );
+				const {
+					id,
+					index
+				} = JSON.parse(xhr.responseText);
+				dispatch( sendCopyFormSuccess(formId, name, id, index) );
 			}
 		}
 
