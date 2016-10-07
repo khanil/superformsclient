@@ -178,6 +178,38 @@ export default class Header extends Component {
     this.props.setColumns(columns);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.columns !== nextProps.columns) {
+      let defaultSortBy = nextProps.defaultSortBy;
+      const dropdowns = [];
+
+      const columns = nextProps.columns.map((col) => {
+        if (Array.isArray(col)) {
+          if (defaultSortBy) {
+            for (let i = 0; i < col.length; i++) {
+              if (col[i].key === defaultSortBy) {
+                dropdowns.push(col[i]);
+                defaultSortBy = undefined;
+                return col[i];
+              }
+            }
+          }
+          const defaultActive = col[0];
+          dropdowns.push(defaultActive);
+          return defaultActive;
+        }
+
+        return col;
+      });
+
+      this.setState({
+        dropdowns
+      });
+
+      this.props.setColumns(columns);
+    }
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState);
   }
