@@ -10,7 +10,7 @@ export default class Column extends Component {
   }
 
   clickHandler(e) {
-    const {sort, id, sortFn, value} = this.props;
+    const {sort, id, sortFn, sortDir, value} = this.props;
 
     if (sort && sortFn) {
       //if value is dropdown ignore clicking on it
@@ -26,7 +26,7 @@ export default class Column extends Component {
         }
       }
 
-      sort(id, sortFn);
+      sort(id, sortFn, sortDir === 'desc' ? 'asc' : 'desc');
     }
   }
 

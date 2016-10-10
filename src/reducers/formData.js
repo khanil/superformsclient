@@ -6,7 +6,8 @@ FETCH_SCHEME_AND_RESPONSES, FETCH_SCHEME_AND_RESPONSES_SUCCESS,
 FETCH_SCHEME_AND_RESPONSES_FAILURE,
 FETCH_SCHEME_AND_RESPONSE, FETCH_SCHEME_AND_RESPONSE_SUCCESS,
 FETCH_SCHEME_AND_RESPONSE_FAILURE,
-FETCH_FORMS, FETCH_FORMS_SUCCESS, FETCH_FORMS_FAILURE,
+FETCH_ALL_FORMS, FETCH_ALL_FORMS_SUCCESS, FETCH_ALL_FORMS_FAILURE,
+FETCH_PERSONAL_FORMS, FETCH_PERSONAL_FORMS_SUCCESS, FETCH_PERSONAL_FORMS_FAILURE,
 SEND_DELETE_FORM_SUCCESS, SEND_COPY_FORM_SUCCESS, SEND_FORM_SUCCESS } from '../actions'
 
 const initialState = Map({
@@ -20,18 +21,23 @@ export default function formData (formData = initialState, action) {
     case FETCH_SCHEME_AND_RESPONSES:
     case SEND_SCHEME:
     case FETCH_SCHEME:
-    case FETCH_FORMS:
       return formData.set('isFetching', true);
+
+    case FETCH_ALL_FORMS:
+      return formData.set('aFetching', true);
+    case FETCH_PERSONAL_FORMS:
+      return formData.set('pFetching', true);
 
     case FETCH_SCHEME_AND_RESPONSE_FAILURE:
     case SEND_RESPONSE_FAILURE:
     case SEND_SCHEME_FAILURE:
     case FETCH_SCHEME_FAILURE:
     case FETCH_SCHEME_AND_RESPONSES_FAILURE:
-    case FETCH_FORMS_FAILURE:
+    case FETCH_ALL_FORMS_FAILURE:
+    case FETCH_PERSONAL_FORMS_FAILURE:
       return formData.merge({
-        isFetching: false
-        // error: action.response
+        isFetching: false,
+        error: action.response
       });
 
     case FETCH_SCHEME_SUCCESS:
@@ -61,13 +67,20 @@ export default function formData (formData = initialState, action) {
         ...action.formData
       })
 
-    case FETCH_FORMS_SUCCESS:
+    case FETCH_ALL_FORMS_SUCCESS:
       return formData.merge({
-        forms: action.forms
+        aForms: action.forms,
+        aFetching: false
+      });
+
+    case FETCH_PERSONAL_FORMS_SUCCESS:
+      return formData.merge({
+        pForms: action.forms,
+        pFetching: false
       });
 
     case SEND_DELETE_FORM_SUCCESS:
-      return formData.update('forms', (forms) => {
+      return formData.update('pForms', (forms) => {
         const id = forms.findKey(form => form.get('id') === action.formId);
 
         console.log(id);
@@ -79,7 +92,7 @@ export default function formData (formData = initialState, action) {
       });
 
     case SEND_COPY_FORM_SUCCESS:
-      return formData.update('forms', (forms) => {
+      return formData.update('pForms', (forms) => {
         const id = forms.findKey(form => form.get('id') === action.formId);
 
         return forms.push(forms.get(id).merge({
@@ -95,7 +108,7 @@ export default function formData (formData = initialState, action) {
       });
 
     case SEND_FORM_SUCCESS:
-      return formData.update('forms', (forms) => {
+      return formData.update('pForms', (forms) => {
         const id = forms.findKey(form => form.get('id') === action.formId);
 
         return forms.setIn([id, 'sent'], Date.now());

@@ -25,9 +25,13 @@ export const FETCH_FORM_CSV = 'FETCH_FORM_CSV';
 export const FETCH_FORM_CSV_SUCCESS = 'FETCH_FORM_CSV_SUCCESS';
 export const FETCH_FORM_CSV_FAILURE = 'FETCH_FORM_CSV_FAILURE';
 
-export const FETCH_FORMS = 'FETCH_FORMS';
-export const FETCH_FORMS_SUCCESS = 'FETCH_FORMS_SUCCESS';
-export const FETCH_FORMS_FAILURE = 'FETCH_FORMS_FAILURE';
+export const FETCH_PERSONAL_FORMS = 'FETCH_PERSONAL_FORMS';
+export const FETCH_PERSONAL_FORMS_SUCCESS = 'FETCH_PERSONAL_FORMS_SUCCESS';
+export const FETCH_PERSONAL_FORMS_FAILURE = 'FETCH_PERSONAL_FORMS_FAILURE';
+
+export const FETCH_ALL_FORMS = 'FETCH_ALL_FORMS';
+export const FETCH_ALL_FORMS_SUCCESS = 'FETCH_ALL_FORMS_SUCCESS';
+export const FETCH_ALL_FORMS_FAILURE = 'FETCH_ALL_FORMS_FAILURE';
 
 export const SHOW_MODAL = 'SHOW_MODAL';
 export const HIDE_MODAL = 'HIDE_MODAL';
@@ -68,9 +72,13 @@ const fetchFormCSVInit = makeActionCreator(FETCH_FORM_CSV, 'url');
 const fetchFormCSVSuccess = makeActionCreator(FETCH_FORM_CSV_SUCCESS, 'data');
 const fetchFormCSVFailure = makeActionCreator(FETCH_FORM_CSV_FAILURE, 'response');
 
-const fetchFormsInit = makeActionCreator(FETCH_FORMS, 'url');
-const fetchFormsSuccess = makeActionCreator(FETCH_FORMS_SUCCESS, 'forms');
-const fetchFormsFailure = makeActionCreator(FETCH_FORMS_FAILURE, 'response');
+const fetchPersonalFormsInit = makeActionCreator(FETCH_PERSONAL_FORMS, 'url');
+const fetchPersonalFormsSuccess = makeActionCreator(FETCH_PERSONAL_FORMS_SUCCESS, 'forms');
+const fetchPersonalFormsFailure = makeActionCreator(FETCH_PERSONAL_FORMS_FAILURE, 'response');
+
+const fetchAllFormsInit = makeActionCreator(FETCH_ALL_FORMS, 'url');
+const fetchAllFormsSuccess = makeActionCreator(FETCH_ALL_FORMS_SUCCESS, 'forms');
+const fetchAllFormsFailure = makeActionCreator(FETCH_ALL_FORMS_FAILURE, 'response');
 
 export const showModal = makeActionCreator(SHOW_MODAL, 'modalType', 'payload');
 export const hideModal = makeActionCreator(HIDE_MODAL);
@@ -223,9 +231,9 @@ export function fetchFormCSV(url) {
 	}
 }
 
-export function fetchForms(url) {
+export function fetchPersonalForms(url) {
 	return dispatch => {
-		dispatch( fetchFormsInit(url) );
+		dispatch( fetchPersonalFormsInit(url) );
 
 		var xhr = new XMLHttpRequest();
 
@@ -234,9 +242,32 @@ export function fetchForms(url) {
 
 		xhr.onload = function () {
 			if (xhr.status != 200) {
-				dispatch( fetchFormsFailure(xhr.response) );
+				dispatch( fetchPersonalFormsFailure(xhr.response) );
 			} else {
-				dispatch( fetchFormsSuccess( JSON.parse(xhr.responseText)) );
+				dispatch( fetchPersonalFormsSuccess( JSON.parse(xhr.responseText)) );
+			}
+		}
+
+		xhr.send();
+	}
+}
+
+import forms from '../components/Table/formsJSON';
+
+export function fetchAllForms(url) {
+	return dispatch => {
+		dispatch( fetchAllFormsInit(url) );
+
+		var xhr = new XMLHttpRequest();
+
+		xhr.open('get', url, true) ;
+		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+		xhr.onload = function () {
+			if (xhr.status != 200) {
+				dispatch( fetchAllFormsFailure(xhr.response) );
+			} else {
+				dispatch( fetchAllFormsSuccess(forms/*JSON.parse(xhr.responseText)*/) );
 			}
 		}
 

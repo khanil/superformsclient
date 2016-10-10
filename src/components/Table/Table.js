@@ -109,24 +109,43 @@ export default class Table extends Component {
    * Sorts table rows
    * @param  {string} field  Column key using for sort
    * @param  {function} sortFn Sorting function
+   * @param  {string} order Sorting order
    */
-  sort(field, sortFn) {
-    const sortField = this.state.sortField;
-    const dataCopy = this.state.data.slice();
-    let sortDir;
+  sort(field, sortFn, order = 'desc') {
+    //console.table(this.state.data);
 
-    if (sortField !== field) {
-      dataCopy.sort((a, b) => sortFn(a[field], b[field]));
-      sortDir = 'desc';
-    } else {
-      dataCopy.reverse();
-      sortDir = this.state.sortDir === 'asc' ? 'desc' : 'asc';
-    }
+    const {
+      data,
+      sortDir,
+      sortField
+    } = this.state;
+    const dataCopy = this.isDataEmpty(data) ? [] : data.slice();
+
+    // if (sortField !== field) {
+    //   dataCopy.sort((a, b) => sortFn(a[field], b[field], order));
+    //   console.log(`sort ${field} ${order}`);
+    // } else {
+    //   if (sortDir !== order) {
+    //     dataCopy.reverse();
+    //     console.log(`sort ${field} just reverse`);
+    //   } else {
+    //     dataCopy.sort((a, b) => sortFn(a[field], b[field], order));
+    //     console.log(`resort ${field} ${order}`);
+    //   }
+    // }
+
+    const sortWrap = order === 'desc' ?
+            (a, b) => sortFn(a[field], b[field]) :
+            (a, b) => -sortFn(a[field], b[field]);
+
+    dataCopy.sort(sortWrap);
+    //console.log(`sort ${field} ${order}`);
+    //console.table(dataCopy);
 
     this.setState({
       data: dataCopy,
       sortField: field,
-      sortDir
+      sortDir: order
     });
   }
 
@@ -150,29 +169,37 @@ export default class Table extends Component {
 
   componentWillMount() {
     const defaultSortBy = this.props.defaultSortBy;
+    const defaultSortOrder = this.props.defaultSortOrder || 'desc';
     const data = this.state.data;
 
     if (defaultSortBy) {
       const sortFn = this.findSortFn(defaultSortBy);
-      console.log(Header.defaultSortBy);
-      this.sort(defaultSortBy, sortFn ? sortFn : Header.sortFnDefault);
+      this.sort(defaultSortBy, sortFn ? sortFn : Header.sortFnDefault, defaultSortOrder);
     }
   }
 
   componentWillReceiveProps(nextProps, nextState) {
     if (this.props.data !== nextProps.data) {
-      this.setState({
-        data: nextProps.data
-      })
+      //console.table(this.state.data);
+
+      this.state.data = nextProps.data;
+
+      const {
+        sortDir,
+        sortField
+      } = this.state;
+
+      const sortFn = this.findSortFn(sortField);
+      this.sort(sortField, sortFn ? sortFn : Header.sortFnDefault, sortDir);
     };
   }
 
   componentWillUpdate() {
-    console.time('table');
+    console.time('table ' + this.props.name);
   }
 
   componentDidUpdate() {
-    console.timeEnd('table');
+    console.timeEnd('table ' + this.props.name);
   }
 
   shouldComponentUpdate(nextProps, nextState) {

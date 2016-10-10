@@ -2,15 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { bindFunctions } from '../utils';
-import { fetchForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
+import { fetchPersonalForms, fetchAllForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
 import { removeFMConfig, copyFMConfig, statusFMConfig } from '../config';
 import { modalTypes } from '../constants';
 import Table from '../components/Table/Table';
 import { formTypes } from '../constants';
 import ControlButtons from '../components/ControlButtons';
 import { createSelector } from 'reselect'
-import forms from '../components/Table/formsJSON';
 import ButtonGlyphicon from '../components/ButtonGlyphicon';
+import Tabs from '../components/journal/Tabs';
+import Spinner from '../components/LoadingSpinner';
 
 import Moment from 'moment';
 Moment.locale('ru');
@@ -19,7 +20,8 @@ momentLocalizer(Moment);
 const dateFormat = 'DD.MM.YYYY';
 const timeFormat = 'HH:mm';
 
-const [ALL, PERSONAL] = [0, 1];
+const ALL = 'ВСЕ ФОРМЫ';
+const PERSONAL = 'МОИ ФОРМЫ';
 
 export default class MainPageApp extends AppComponent {
   constructor(props) {
@@ -29,10 +31,22 @@ export default class MainPageApp extends AppComponent {
       tableMode: PERSONAL
     }
 
-    this.myColumns = [
+    this.myColumnsALL = [
       {
         key: 'index',
-        title: 'ID'
+        title: 'ID',
+        sortFn: (a, b) => (b - a)
+      },
+      {
+        key: 'author',
+        title: 'Автор',
+        renderCell: (value, data) => {
+          const surname = data.surname;
+          const name = data.name[0] + '.';
+          const patronymic = data.patronymic ? (data.patronymic[0] + '.') : '';
+
+          return `${surname} ${name} ${patronymic}`;
+        }
       },
       {
         key: 'title',
@@ -92,9 +106,115 @@ export default class MainPageApp extends AppComponent {
           },
           sortFn: (a, b) => {
             const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-            console.log(values);
             return (values[1] - values[0]);
           }
+        },
+        {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
+        }
+      ],
+      {
+        key: 'control',
+        title: '',
+        renderCell: (value, data) => (
+          <div className={`btn-group ${ControlButtons.className}`}>
+            <ButtonGlyphicon
+              icon='list-alt'
+              onClick={this.redirectToResponsesPage.bind(null, data.id)}
+              title='Просмотр ответов'/>
+          </div>
+        ),
+        sort: false
+      }
+    ];
+
+    this.myColumnsPERSONAL = [
+      {
+        key: 'index',
+        title: 'ID',
+        sortFn: (a, b) => (b - a)
+      },
+      {
+        key: 'title',
+        title: 'Название'
+      },
+      {
+        key: 'type',
+        title: 'Назначение',
+        renderCell: (value) => (formTypes[value.toUpperCase()].label),
+        sortFn: (a, b) => {
+          const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
+          if (a_label < b_label) return 1;
+          if (a_label > b_label) return -1;
+        }
+      },
+      [
+        {
+          key: 'created',
+          title: 'Создано',
+          renderCell: (value) => (Moment(value).format(`${dateFormat} ${timeFormat}`)),
+          sortFn: (a, b) => {
+            const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
+            return (values[1] - values[0]);
+          }
+        },
+        {
+          key: 'edited',
+          title: 'Отредактировано',
+          renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не редактировалось'),
+          sortFn: (a, b) => {
+            const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
+            return (values[1] - values[0]);
+          }
+        }
+      ],
+      [
+        {
+          key: 'sent',
+          title: 'Отправлено',
+          renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
+          sortFn: (a, b) => {
+            const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
+            return (values[1] - values[0]);
+          }
+        },
+        {
+          key: 'expires',
+          title: 'Истекает',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value) {
+              return Moment(value).format(`${dateFormat} ${timeFormat}`);
+            } else {
+              return 'Не истекает';
+            }
+          },
+          sortFn: (a, b) => {
+            const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
+            return (values[1] - values[0]);
+          }
+        },
+        {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
         }
       ],
       {
@@ -115,218 +235,17 @@ export default class MainPageApp extends AppComponent {
       }
     ];
 
-    // this.myColumnsALL = [
-    //   {
-    //     key: 'index',
-    //     title: 'ID',
-    //     sortFn: (a, b) => (b - a)
-    //   },
-    //   {
-    //     key: 'author',
-    //     title: 'Автор',
-    //     renderCell: (value, data) => {
-    //       const surname = data.surname;
-    //       const name = data.name[0] + '.';
-    //       const patronymic = data.patronymic ? (data.patronymic[0] + '.') : '';
+    this.tabs = [ALL, PERSONAL];
 
-    //       return `${surname} ${name} ${patronymic}`;
-    //     }
-    //   },
-    //   {
-    //     key: 'title',
-    //     title: 'Название'
-    //   },
-    //   {
-    //     key: 'type',
-    //     title: 'Назначение',
-    //     renderCell: (value) => (formTypes[value.toUpperCase()].label),
-    //     sortFn: (a, b) => {
-    //       const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
-    //       if (a_label < b_label) return 1;
-    //       if (a_label > b_label) return -1;
-    //     }
-    //   },
-    //   [
-    //     {
-    //       key: 'created',
-    //       title: 'Создано',
-    //       renderCell: (value) => (Moment(value).format(`${dateFormat} ${timeFormat}`)),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'edited',
-    //       title: 'Отредактировано',
-    //       renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не редактировалось'),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     }
-    //   ],
-    //   [
-    //     {
-    //       key: 'sent',
-    //       title: 'Отправлено',
-    //       renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'expires',
-    //       title: 'Истекает',
-    //       renderCell: (value, data) => {
-    //         if (!data.sent)
-    //           return 'Не отправлялось';
-    //         if (value) {
-    //           return Moment(value).format(`${dateFormat} ${timeFormat}`);
-    //         } else {
-    //           return 'Не истекает';
-    //         }
-    //       },
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'resp_count',
-    //       title: 'Ответы',
-    //       renderCell: (value, data) => {
-    //         if (!data.sent)
-    //           return 'Не отправлялось';
-    //         if (value === null)
-    //           return 0;
-    //         return value;
-    //       },
-    //       sortFn: (a, b) => (b - a)
-    //     }
-    //   ],
-    //   {
-    //     key: 'control',
-    //     title: '',
-    //     renderCell: (value, data) => (
-    //       <div className={`btn-group ${ControlButtons.className}`}>
-    //         <ButtonGlyphicon
-    //           icon='list-alt'
-    //           onClick={this.redirectToResponsesPage.bind(null, data.id)}
-    //           title='Просмотр ответов'/>
-    //       </div>
-    //     )
-    //   }
-    // ];
-
-    // this.myColumnsPERSONAL = [
-    //   {
-    //     key: 'index',
-    //     title: 'ID',
-    //     sortFn: (a, b) => (b - a)
-    //   },
-    //   {
-    //     key: 'title',
-    //     title: 'Название'
-    //   },
-    //   {
-    //     key: 'type',
-    //     title: 'Назначение',
-    //     renderCell: (value) => (formTypes[value.toUpperCase()].label),
-    //     sortFn: (a, b) => {
-    //       const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
-    //       if (a_label < b_label) return 1;
-    //       if (a_label > b_label) return -1;
-    //     }
-    //   },
-    //   [
-    //     {
-    //       key: 'created',
-    //       title: 'Создано',
-    //       renderCell: (value) => (Moment(value).format(`${dateFormat} ${timeFormat}`)),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'edited',
-    //       title: 'Отредактировано',
-    //       renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не редактировалось'),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     }
-    //   ],
-    //   [
-    //     {
-    //       key: 'sent',
-    //       title: 'Отправлено',
-    //       renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'expires',
-    //       title: 'Истекает',
-    //       renderCell: (value, data) => {
-    //         if (!data.sent)
-    //           return 'Не отправлялось';
-    //         if (value) {
-    //           return Moment(value).format(`${dateFormat} ${timeFormat}`);
-    //         } else {
-    //           return 'Не истекает';
-    //         }
-    //       },
-    //       sortFn: (a, b) => {
-    //         const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
-    //         return (values[1] - values[0]);
-    //       }
-    //     },
-    //     {
-    //       key: 'resp_count',
-    //       title: 'Ответы',
-    //       renderCell: (value, data) => {
-    //         if (!data.sent)
-    //           return 'Не отправлялось';
-    //         if (value === null)
-    //           return 0;
-    //         return value;
-    //       },
-    //       sortFn: (a, b) => (b - a)
-    //     }
-    //   ],
-    //   {
-    //     key: 'control',
-    //     title: '',
-    //     renderCell: (value, data) => (
-    //       <ControlButtons
-    //         isFormSent={data.sent !== null}
-    //         edit={this.redirectToEditPage.bind(null, data.id)}
-    //         showStatus={this.showStatus.bind(null, data.id, data.title)}
-    //         showResponses={this.redirectToResponsesPage.bind(null, data.id)}
-    //         remove={this.remove.bind(null, data.id)}
-    //         copy={this.copy.bind(null, data.id, data.title)}
-    //         send={this.send.bind(null, data.id)}
-    //       />
-    //     ),
-    //     sort: false
-    //   }
-    // ];
+    this.tableSpinner = (
+      <Spinner
+        iconSize='lg'
+      />
+    );
 
     bindFunctions.call(this, ['redirectToResponsesPage', 'redirectToEditPage',
       'redirectToPreviewPage', 'remove', 'copy', 'send', 'showStatus',
-      'tableRowClickHandler', 'radioClickHandler']);
-  }
-
-  componentWillMount() {
-    const urlType = 'getUrl';
-    const url = this.getUrl(urlType);
-    this.props.fetchForms(url);
+      'tableRowClickHandler', 'radioClickHandler', 'tabClickHandler']);
   }
 
   redirectToResponsesPage(formId) {
@@ -393,6 +312,22 @@ export default class MainPageApp extends AppComponent {
     this.props.showModal(modalTypes.MESSAGE_MODAL, payload);
   }
 
+  tabClickHandler(tab) {
+    const currTableMode = this.state.tableMode;
+    if (currTableMode === tab)
+      return;
+
+    if (tab === ALL) {
+      const urlType = 'getAllUrl';
+      const url = this.getUrl(urlType);
+      this.props.fetchAllForms(url);
+    }
+
+    this.setState({
+      tableMode: tab
+    });
+  }
+
   tableRowClickHandler(e, data) {
     let target = e.target;
 
@@ -410,10 +345,29 @@ export default class MainPageApp extends AppComponent {
     const currTableMode = this.state.tableMode;
     if (currTableMode === mode)
       return;
+
+    if (mode === ALL) {
+      const urlType = 'getAllUrl';
+      const url = this.getUrl(urlType);
+      this.props.fetchAllForms(url);
+    }
+
     this.setState({
       tableMode: mode
     });
   }
+
+  componentWillMount() {
+    const urlType = 'getUrl';
+    const url = this.getUrl(urlType);
+    this.props.fetchPersonalForms(url);
+  }
+
+  // componentDidMount() {
+  //   const urlType = 'getAllUrl';
+  //   const url = this.getUrl(urlType);
+  //   this.props.fetchAllForms(url);
+  // }
 
   componentWillUpdate() {
     console.time('page');
@@ -425,53 +379,58 @@ export default class MainPageApp extends AppComponent {
 
   render() {
     const {
-      forms
+      aForms,
+      pForms,
+      aFetching,
+      pFetching
     } = this.props;
 
-    if (forms === undefined)
+    if (pForms === undefined)
       return null;
 
     const tableMode = this.state.tableMode;
-    console.log(tableMode);
 
     const pTableStyle = tableMode === PERSONAL ? null : {'display' : 'none'};
     const aTableStyle = tableMode === ALL ? null : {'display' : 'none'};
 
     return (
       <div>
-        {/*<div className='form-group'>
-          <div className="checkbox">
-            <label>
-              <input
-                type="radio"
-                checked={tableMode === ALL}
-                onChange={this.radioClickHandler.bind(null, ALL)}
-              /> ALL
-            </label>
-          </div>
-          <div className="checkbox">
-            <label>
-              <input
-                type="radio"
-                checked={tableMode === PERSONAL}
-                onChange={this.radioClickHandler.bind(null, PERSONAL)}
-              /> PERSONAL
-            </label>
-          </div>
-        </div>*/}
-        <h3>Созданные формы:</h3>
-        <Table
-          columns={this.myColumns}
-          data={forms}
-          defaultSortBy={'resp_count'}
-          name='form-list'
-          onRowClick={this.tableRowClickHandler}
+
+        <Tabs
+          active={tableMode}
+          className={'nav-pretable'}
+          clickHandler={this.tabClickHandler}
+          tabs={this.tabs}
         />
-        {/*<div style={aTableStyle}>
+
+        {/*
+          tableMode === ALL ?
           <Table
             columns={this.myColumnsALL}
-            data={forms}
+            data={aForms}
             defaultSortBy={'resp_count'}
+            name='journal'
+            onRowClick={this.tableRowClickHandler}
+          /> :
+          <Table
+            columns={this.myColumnsPERSONAL}
+            data={pForms}
+            defaultSortBy={'edited'}
+            name='form-list'
+            onRowClick={this.tableRowClickHandler}
+          />
+        */}
+
+        <div style={aTableStyle}>
+          <Table
+            columns={this.myColumnsALL}
+            data={aForms}
+            defaultSortBy={'index'}
+            emptyDataMessage={
+              aFetching ?
+              this.tableSpinner :
+              null
+            }
             name='journal'
             onRowClick={this.tableRowClickHandler}
           />
@@ -479,38 +438,55 @@ export default class MainPageApp extends AppComponent {
         <div style={pTableStyle}>
           <Table
             columns={this.myColumnsPERSONAL}
-            data={forms}
-            defaultSortBy={'edited'}
+            data={pForms}
+            defaultSortBy={'index'}
+            emptyDataMessage={
+              pFetching ?
+              this.tableSpinner :
+              null
+            }
             name='form-list'
             onRowClick={this.tableRowClickHandler}
           />
-        </div>*/}
+        </div>
         {super.render()}
       </div>
     );
   }
 }
 
-const getForms = createSelector(
-  (state) => state.formData.get('forms'),
+const getAllForms = createSelector(
+  (state) => state.formData.get('aForms'),
   (forms) => {
     if (forms === undefined)
-      return forms;
+      return [];
+    return forms.toJS();
+  }
+);
+
+const getPersonalForms = createSelector(
+  (state) => state.formData.get('pForms'),
+  (forms) => {
+    if (forms === undefined)
+      return [];
     return forms.toJS();
   }
 );
 
 const mapStateToProps = (state) => {
   return {
-    isFetching: state.formData.get('isFetching'),
-    forms: getForms(state),
+    aFetching: state.formData.get('aFetching'),
+    pFetching: state.formData.get('pFetching'),
+    aForms: getAllForms(state),
+    pForms: getPersonalForms(state),
     error: state.formData.get('error'),
     modal: state.modal
   };
 };
 
 const mapDispatchToProps = {
-  fetchForms,
+  fetchAllForms,
+  fetchPersonalForms,
   showModal,
   hideModal,
   sendDeleteForm,
