@@ -84,6 +84,18 @@ export default class MainPageApp extends AppComponent {
       ],
       [
         {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
+        },
+        {
           key: 'sent',
           title: 'Отправлено',
           renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
@@ -108,18 +120,6 @@ export default class MainPageApp extends AppComponent {
             const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
             return (values[1] - values[0]);
           }
-        },
-        {
-          key: 'resp_count',
-          title: 'Ответы',
-          renderCell: (value, data) => {
-            if (!data.sent)
-              return 'Не отправлялось';
-            if (value === null)
-              return 0;
-            return value;
-          },
-          sortFn: (a, b) => (b - a)
         }
       ],
       {
@@ -179,6 +179,18 @@ export default class MainPageApp extends AppComponent {
       ],
       [
         {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
+        },
+        {
           key: 'sent',
           title: 'Отправлено',
           renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
@@ -203,18 +215,6 @@ export default class MainPageApp extends AppComponent {
             const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
             return (values[1] - values[0]);
           }
-        },
-        {
-          key: 'resp_count',
-          title: 'Ответы',
-          renderCell: (value, data) => {
-            if (!data.sent)
-              return 'Не отправлялось';
-            if (value === null)
-              return 0;
-            return value;
-          },
-          sortFn: (a, b) => (b - a)
         }
       ],
       {

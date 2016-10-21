@@ -112,8 +112,6 @@ export default class Table extends Component {
    * @param  {string} order Sorting order
    */
   sort(field, sortFn, order = 'desc') {
-    //console.table(this.state.data);
-
     const {
       data,
       sortDir,
@@ -121,26 +119,11 @@ export default class Table extends Component {
     } = this.state;
     const dataCopy = this.isDataEmpty(data) ? [] : data.slice();
 
-    // if (sortField !== field) {
-    //   dataCopy.sort((a, b) => sortFn(a[field], b[field], order));
-    //   console.log(`sort ${field} ${order}`);
-    // } else {
-    //   if (sortDir !== order) {
-    //     dataCopy.reverse();
-    //     console.log(`sort ${field} just reverse`);
-    //   } else {
-    //     dataCopy.sort((a, b) => sortFn(a[field], b[field], order));
-    //     console.log(`resort ${field} ${order}`);
-    //   }
-    // }
-
     const sortWrap = order === 'desc' ?
             (a, b) => sortFn(a[field], b[field]) :
             (a, b) => -sortFn(a[field], b[field]);
 
     dataCopy.sort(sortWrap);
-    //console.log(`sort ${field} ${order}`);
-    //console.table(dataCopy);
 
     this.setState({
       data: dataCopy,
@@ -180,8 +163,6 @@ export default class Table extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     if (this.props.data !== nextProps.data) {
-      //console.table(this.state.data);
-
       this.state.data = nextProps.data;
 
       const {
