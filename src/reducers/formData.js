@@ -8,15 +8,19 @@ FETCH_SCHEME_AND_RESPONSE, FETCH_SCHEME_AND_RESPONSE_SUCCESS,
 FETCH_SCHEME_AND_RESPONSE_FAILURE,
 FETCH_ALL_FORMS, FETCH_ALL_FORMS_SUCCESS, FETCH_ALL_FORMS_FAILURE,
 FETCH_PERSONAL_FORMS, FETCH_PERSONAL_FORMS_SUCCESS, FETCH_PERSONAL_FORMS_FAILURE,
-SEND_DELETE_FORM_SUCCESS, SEND_COPY_FORM_SUCCESS, SEND_FORM_SUCCESS } from '../actions'
+SEND_DELETE_FORM_SUCCESS, SEND_COPY_FORM_SUCCESS, SEND_FORM_SUCCESS, APPLY_SEARCH_FILTER } from '../actions'
 
 const initialState = Map({
   isFetching: false,
+  searchStr: '',
   error: null
 });
 
 export default function formData (formData = initialState, action) {
   switch (action.type) {
+    case APPLY_SEARCH_FILTER:
+      return formData.set('searchStr', action.str);
+
     case FETCH_SCHEME_AND_RESPONSE:
     case FETCH_SCHEME_AND_RESPONSES:
     case SEND_SCHEME:

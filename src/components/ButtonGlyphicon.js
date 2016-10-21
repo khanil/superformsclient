@@ -19,7 +19,11 @@ export default class ButtonGlyphicon extends Component {
         onClick={onClick}
         title={title}
         type="button">
-          <span className={`glyphicon glyphicon-${icon}`} aria-hidden='true'></span>
+          <span
+            className={`glyphicon glyphicon-${icon}`}
+            aria-hidden='true'
+          >
+          </span>
       </button>
     );
   }
@@ -27,6 +31,7 @@ export default class ButtonGlyphicon extends Component {
 
 ButtonGlyphicon.propTypes = {
   icon: PropTypes.string.isRequired,
+  title: PropTypes.string,
   type: PropTypes.string,
   onClick: PropTypes.func.isRequired
 }

@@ -23,9 +23,9 @@ if (env == 'build') {
 
 var config = {
   entry: {
-    // generation: ['babel-polyfill', './src/entries/generation'],
-    // interview: ['babel-polyfill', './src/entries/interview'],
-    // report: ['babel-polyfill', './src/entries/responses'],
+    //generation: ['babel-polyfill', './src/entries/generation'],
+    //interview: ['babel-polyfill', './src/entries/interview'],
+    //report: ['babel-polyfill', './src/entries/responses']
     main: ['babel-polyfill', './src/entries/main']
   },
   output: {

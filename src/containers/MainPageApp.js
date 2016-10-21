@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { bindFunctions } from '../utils';
-import { fetchPersonalForms, fetchAllForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
+import { fetchPersonalForms, fetchAllForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm, applySearchFilter} from '../actions';
 import { removeFMConfig, copyFMConfig, statusFMConfig } from '../config';
 import { modalTypes } from '../constants';
 import Table from '../components/Table/Table';
@@ -11,6 +11,7 @@ import ControlButtons from '../components/ControlButtons';
 import { createSelector } from 'reselect'
 import ButtonGlyphicon from '../components/ButtonGlyphicon';
 import Tabs from '../components/journal/Tabs';
+import SearchBar from '../components/journal/SearchBar';
 import Spinner from '../components/LoadingSpinner';
 
 import Moment from 'moment';
@@ -379,6 +380,7 @@ export default class MainPageApp extends AppComponent {
 
   render() {
     const {
+      applySearchFilter,
       aForms,
       pForms,
       aFetching,
@@ -403,23 +405,9 @@ export default class MainPageApp extends AppComponent {
           tabs={this.tabs}
         />
 
-        {/*
-          tableMode === ALL ?
-          <Table
-            columns={this.myColumnsALL}
-            data={aForms}
-            defaultSortBy={'resp_count'}
-            name='journal'
-            onRowClick={this.tableRowClickHandler}
-          /> :
-          <Table
-            columns={this.myColumnsPERSONAL}
-            data={pForms}
-            defaultSortBy={'edited'}
-            name='form-list'
-            onRowClick={this.tableRowClickHandler}
-          />
-        */}
+        <SearchBar
+          onSearch={applySearchFilter}
+        />
 
         <div style={aTableStyle}>
           <Table
@@ -473,18 +461,38 @@ const getPersonalForms = createSelector(
   }
 );
 
+const getTableMode = (state) => state.tableMode;
+
+const getSearchStr = (state) => state.formData.get('searchStr');
+
+const getSearchResult = createSelector(
+  [getAllForms, getSearchStr],
+  (forms, search) => {
+    return forms.filter((form) => {
+      const {
+        surname,
+        title
+      } = form;
+      const re = new RegExp(search, 'i');
+      return (re.test(surname) || re.test(title));
+    });
+  }
+);
+
 const mapStateToProps = (state) => {
   return {
     aFetching: state.formData.get('aFetching'),
-    pFetching: state.formData.get('pFetching'),
-    aForms: getAllForms(state),
-    pForms: getPersonalForms(state),
+    //aForms: getAllForms(state),
+    aForms: getSearchStr(state) === '' ? getAllForms(state) : getSearchResult(state),
     error: state.formData.get('error'),
+    pFetching: state.formData.get('pFetching'),
+    pForms: getPersonalForms(state),
     modal: state.modal
   };
 };
 
 const mapDispatchToProps = {
+  applySearchFilter,
   fetchAllForms,
   fetchPersonalForms,
   showModal,

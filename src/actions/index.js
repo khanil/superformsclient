@@ -48,6 +48,8 @@ export const SEND_FORM = 'SEND_FORM';
 export const SEND_FORM_SUCCESS = 'SEND_FORM_SUCCESS';
 export const SEND_FORM_FAILURE = 'SEND_FORM_FAILURE';
 
+export const APPLY_SEARCH_FILTER = 'APPLY_SEARCH_FILTER';
+
 const sendSchemeInit = makeActionCreator(SEND_SCHEME, 'url', 'scheme');
 const sendSchemeSuccess = makeActionCreator(SEND_SCHEME_SUCCESS, 'formId');
 const sendSchemeFailure = makeActionCreator(SEND_SCHEME_FAILURE, 'response');
@@ -94,6 +96,8 @@ export const sendCopyFormFailure = makeActionCreator(SEND_COPY_FORM_FAILURE, 're
 export const sendFormInit = makeActionCreator(SEND_FORM, 'url', 'config');
 export const sendFormSuccess = makeActionCreator(SEND_FORM_SUCCESS, 'formId');
 export const sendFormFailure = makeActionCreator(SEND_FORM_FAILURE, 'response', 'formId');
+
+export const applySearchFilter = makeActionCreator(APPLY_SEARCH_FILTER, 'str');
 
 export function sendScheme(url, scheme) {
 	return dispatch => {

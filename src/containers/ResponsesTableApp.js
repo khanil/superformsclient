@@ -110,6 +110,12 @@ export default class ResponsesTableApp extends AppComponent {
         case 'DATETIME' :
           text = Moment(answer).format(formatDate + ' ' + formatTime);
           break;
+        case 'SELECT':
+          /** For previous releases */
+          if (typeof(answer) === 'string')
+            break;
+          text = answer.join('; ');
+          break;
         default:
           break;
       }
