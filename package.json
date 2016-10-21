@@ -52,6 +52,7 @@
     "react-super-forms": "file:///Z:\\react-super-forms",
     "react-widgets": "^3.3.1",
     "redux": "^3.4.0",
+    "redux-actions": "^0.12.0",
     "redux-form": "^5.0.1",
     "redux-thunk": "^2.0.1",
     "reselect": "^2.5.4"

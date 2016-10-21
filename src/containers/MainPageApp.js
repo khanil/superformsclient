@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { bindFunctions } from '../utils';
-import { fetchPersonalForms, fetchAllForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
+import { showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm} from '../actions';
 import { removeFMConfig, copyFMConfig, statusFMConfig } from '../config';
 import { modalTypes } from '../constants';
 import Table from '../components/Table/Table';
@@ -12,6 +12,9 @@ import { createSelector } from 'reselect'
 import ButtonGlyphicon from '../components/ButtonGlyphicon';
 import Tabs from '../components/journal/Tabs';
 import Spinner from '../components/LoadingSpinner';
+import * as personalForms from '../reducers/personalForms';
+import * as allForms from '../reducers/allForms';
+
 
 import Moment from 'moment';
 Moment.locale('ru');
@@ -475,18 +478,20 @@ const getPersonalForms = createSelector(
 
 const mapStateToProps = (state) => {
   return {
-    aFetching: state.formData.get('aFetching'),
-    pFetching: state.formData.get('pFetching'),
-    aForms: getAllForms(state),
-    pForms: getPersonalForms(state),
+    aFetching: allForms.getFetchingStatus(state.allForms),
+    // pFetching: state.formData.get('pFetching'),
+    pFetching: personalForms.getFetchingStatus(state.personalForms),
+    aForms: allForms.getFormsList(state.allForms),
+    // pForms: getPersonalForms(state),
+    pForms: personalForms.getFormsList(state.personalForms),
     error: state.formData.get('error'),
     modal: state.modal
   };
 };
 
 const mapDispatchToProps = {
-  fetchAllForms,
-  fetchPersonalForms,
+  fetchAllForms: allForms.fetch,
+  fetchPersonalForms: personalForms.fetch,
   showModal,
   hideModal,
   sendDeleteForm,
