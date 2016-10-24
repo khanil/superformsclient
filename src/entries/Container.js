@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import {load, get} from './main';
+import { copy, get, send, remove } from '../redux/modules/myFormsList';
 
 export default class Container extends Component {
   constructor(props) {
@@ -9,8 +9,12 @@ export default class Container extends Component {
     this.clickHadler = this.clickHadler.bind(this);
   }
 
+  componentWillMount() {
+    this.props.get();
+  }
+
   clickHadler() {
-    this.props.load();
+    this.props.copy("4ap6YmN8n", 'Копия 1');
   }
 
   render() {
@@ -26,11 +30,11 @@ export default class Container extends Component {
           className="btn btn-default"
           onClick={this.clickHadler}
         >
-          Click
+          Remove
         </button>
       </div>
     );
   }
 }
 
-export default connect(null, { load, get })(Container);
+export default connect(null, { copy, get, remove, send })(Container);

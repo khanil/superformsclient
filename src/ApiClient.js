@@ -1,13 +1,40 @@
+function http(uri, method, body) {
+  return new Promise((resolve, reject) => {
+
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, uri, true) ;
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+    xhr.onload = function() {
+      if (this.status == 200) {
+        let response;
+        try {
+          response = JSON.parse(this.response);
+        } catch(e) {
+          response = this.response;
+        }
+        resolve(response);
+      } else {
+        const error = new Error(this.statusText);
+        error.code = this.status;
+        reject(error);
+      }
+    };
+
+    xhr.onerror = function() {
+      reject(new Error('Network Error'));
+    };
+
+    xhr.send(body);
+  });
+}
+
+const methods = ['get', 'post', 'delete']
+
 export default class ApiClient {
-  get() {
-
-  }
-
-  post() {
-
-  }
-
-  del() {
-    
+  constructor() {
+    methods.forEach((method) => {
+      this[method] = (path, body) => http(path, method, body);
+    });
   }
 }

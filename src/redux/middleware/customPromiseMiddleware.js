@@ -1,24 +1,28 @@
-const customPromiseMiddleware = ({dispatch, getState}) => next => action => {
-  if (typeof(action) == 'function')
-    return next(action); //pass to thunk middleware
+export default function customPromiseMiddleware(client) {
+  return ({dispatch, getState}) => next => action => {
+    if (typeof(action) == 'function')
+      return next(action); //pass to thunk middleware
 
-  const { promise, types, ...rest } = action;
-  if (!promise)
-    return next(action); //pass to next middleware
+    const { promise, types, ...rest } = action;
 
-  const [REQUEST, SUCCESS, FAILURE] = types;
-  next({...rest, type: REQUEST}); //dispatch action init
+    console.log(action);
+    console.log(rest);
 
-  const actionPromise = promise();
-  actionPromise.then(
-    (result) => next({...rest, result, type: SUCCESS}),
-    (error) => next({...rest, error, type: FAILURE})
-  ).catch((error) => {
-    console.error('MIDDLEWARE ERROR:', error);
-    next({...rest, error, type: FAILURE})
-  });
+    if (!promise)
+      return next(action); //pass to next middleware
 
-  return actionPromise;
+    const [REQUEST, SUCCESS, FAILURE] = types;
+    next({...rest, type: REQUEST}); //dispatch action init
+
+    const actionPromise = promise(client);
+    actionPromise.then(
+      (result) => next({...rest, result, type: SUCCESS}),
+      (error) => next({...rest, error, type: FAILURE})
+    ).catch((error) => {
+      console.error('MIDDLEWARE ERROR:', error);
+      next({...rest, error, type: FAILURE})
+    });
+
+    return actionPromise;
+  }
 }
-
-export default customPromiseMiddleware;
