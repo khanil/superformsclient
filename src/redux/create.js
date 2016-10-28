@@ -6,8 +6,6 @@ import ApiClient from '../ApiClient';
 const client = new ApiClient();
 
 export default function configureStore(initialState, rootReducer) {
-  console.log(client);
-
   const store = createStore(
     rootReducer,
     initialState,

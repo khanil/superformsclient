@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { copy, get, send, remove } from '../redux/modules/myFormsList';
+import { copy, fetch, send, remove } from '../redux/modules/myFormsList';
 
 export default class Container extends Component {
   constructor(props) {
@@ -10,17 +10,17 @@ export default class Container extends Component {
   }
 
   componentWillMount() {
-    this.props.get();
+    this.props.fetch();
   }
 
   clickHadler() {
-    this.props.copy("4ap6YmN8n", 'Копия 1');
+    this.props.remove("p9qpyRmW", 'Копия 1');
   }
 
   render() {
     const {
       load,
-      get
+      fetch
     } = this.props;
 
     return (
@@ -37,4 +37,4 @@ export default class Container extends Component {
   }
 }
 
-export default connect(null, { copy, get, remove, send })(Container);
+export default connect(null, { copy, fetch, remove, send })(Container);

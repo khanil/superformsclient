@@ -7,8 +7,7 @@ FETCH_FORMS_FAILURE, SEND_DELETE_FORM_FAILURE,
 SEND_DELETE_FORM_SUCCESS, SEND_SCHEME_SUCCESS,
 SEND_COPY_FORM_SUCCESS, SEND_COPY_FORM_FAILURE, SEND_FORM_SUCCESS,
 SEND_FORM_FAILURE } from '../actions';
-import { sendFMSuccessConfig } from '../config'
-
+import { sendFMSuccessConfig } from '../config';
 
 const initialState = Map({
   visible: false,

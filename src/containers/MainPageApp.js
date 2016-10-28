@@ -12,8 +12,8 @@ import { createSelector } from 'reselect'
 import ButtonGlyphicon from '../components/ButtonGlyphicon';
 import Tabs from '../components/journal/Tabs';
 import Spinner from '../components/LoadingSpinner';
-import * as personalForms from '../reducers/personalForms';
-import * as allForms from '../reducers/allForms';
+import * as myFormsList from '../redux/modules/myFormsList';
+import * as allFormsList from '../redux/modules/allFormsList';
 
 
 import Moment from 'moment';
@@ -273,7 +273,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'copyUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const submitHandler = (value) => (this.props.sendCopyForm(url, formId, value));
+    const submitHandler = (value) => (this.props.sendCopyForm(formId, value));
 
     const payload = copyFMConfig;
     payload.label = `Введите название для копии формы "${name}"`;
@@ -286,7 +286,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'deleteUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const confirmHandler = this.props.sendDeleteForm.bind(this, url, formId);
+    const confirmHandler = this.props.sendDeleteForm.bind(this, formId);
 
     const payload = removeFMConfig;
     payload.confirmHandler = confirmHandler;
@@ -298,7 +298,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'sendUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const sendHandler = (config) => this.props.sendForm(url, formId, config);
+    const sendHandler = (config) => this.props.sendForm(formId, config);
 
     const payload = {};
     payload.sendHandler = sendHandler;
@@ -363,21 +363,7 @@ export default class MainPageApp extends AppComponent {
   componentWillMount() {
     const urlType = 'getUrl';
     const url = this.getUrl(urlType);
-    this.props.fetchPersonalForms(url);
-  }
-
-  // componentDidMount() {
-  //   const urlType = 'getAllUrl';
-  //   const url = this.getUrl(urlType);
-  //   this.props.fetchAllForms(url);
-  // }
-
-  componentWillUpdate() {
-    console.time('page');
-  }
-
-  componentDidUpdate() {
-    console.timeEnd('page');
+    this.props.fetchPersonalForms();
   }
 
   render() {
@@ -405,24 +391,6 @@ export default class MainPageApp extends AppComponent {
           clickHandler={this.tabClickHandler}
           tabs={this.tabs}
         />
-
-        {/*
-          tableMode === ALL ?
-          <Table
-            columns={this.myColumnsALL}
-            data={aForms}
-            defaultSortBy={'resp_count'}
-            name='journal'
-            onRowClick={this.tableRowClickHandler}
-          /> :
-          <Table
-            columns={this.myColumnsPERSONAL}
-            data={pForms}
-            defaultSortBy={'edited'}
-            name='form-list'
-            onRowClick={this.tableRowClickHandler}
-          />
-        */}
 
         <div style={aTableStyle}>
           <Table
@@ -478,25 +446,25 @@ const getPersonalForms = createSelector(
 
 const mapStateToProps = (state) => {
   return {
-    aFetching: allForms.getFetchingStatus(state.allForms),
+    aFetching: allFormsList.getStatus(state.allFormsList),
     // pFetching: state.formData.get('pFetching'),
-    pFetching: personalForms.getFetchingStatus(state.personalForms),
-    aForms: allForms.getFormsList(state.allForms),
+    pFetching: myFormsList.getStatus(state.myFormsList),
+    aForms: allFormsList.getForms(state.allFormsList),
     // pForms: getPersonalForms(state),
-    pForms: personalForms.getFormsList(state.personalForms),
-    error: state.formData.get('error'),
+    pForms: myFormsList.getForms(state.myFormsList),
+    error: null,
     modal: state.modal
   };
 };
 
 const mapDispatchToProps = {
-  fetchAllForms: allForms.fetch,
-  fetchPersonalForms: personalForms.fetch,
+  fetchAllForms: allFormsList.fetch,
+  fetchPersonalForms: myFormsList.fetch,
   showModal,
   hideModal,
-  sendDeleteForm,
-  sendCopyForm,
-  sendForm
+  sendDeleteForm: myFormsList.remove,
+  sendCopyForm: myFormsList.copy,
+  sendForm: myFormsList.send
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainPageApp);

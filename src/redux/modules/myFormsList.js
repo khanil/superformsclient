@@ -118,7 +118,7 @@ export function send(id, config = {}) {
 //- Selectors
 export const getForms = createSelector(
   (state) => state.get('map'),
-  (map) => map.toJS()
+  (map) => map.toList().toJS()
 );
 
 export const getStatus = (state) => state.get('busy');

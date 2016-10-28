@@ -5,9 +5,6 @@ export default function customPromiseMiddleware(client) {
 
     const { promise, types, ...rest } = action;
 
-    console.log(action);
-    console.log(rest);
-
     if (!promise)
       return next(action); //pass to next middleware
 

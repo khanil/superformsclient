@@ -28,11 +28,17 @@ export const REQUEST = {
   label: 'Запрос'
 }
 
+export const TEST  = {
+  value: 'TEST',
+  label: 'Проба'
+}
+
+
 export const OTHER = {
   value: 'other',
   label: 'Другое'
 }
 
 export const ALL = [
-  SURVEY, VOTING, REQUEST, MONITORING, INTERVIEW, OTHER
+  SURVEY, VOTING, REQUEST, MONITORING, INTERVIEW, TEST, OTHER
 ];

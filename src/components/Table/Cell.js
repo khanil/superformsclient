@@ -24,6 +24,7 @@ export default class Cell extends Component {
     } = this.props;
 
     const idClass = `${BEM.CELL}_id_${id}`;
+    const displayValue = renderCell ? renderCell(value, data) : value;
 
     return (
       <td
@@ -31,11 +32,7 @@ export default class Cell extends Component {
         colSpan={colSpan}
         title={renderCell ? null : value}
       >
-        {
-          renderCell ?
-          renderCell(value, data) :
-          value
-        }
+        {displayValue}
       </td>
     );
   }
