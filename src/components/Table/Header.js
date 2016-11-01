@@ -128,8 +128,8 @@ export default class Header extends Component {
    */
   static sortFnDefault(a, b) {
     //strings sorting
-    if (b < a) return 1;
-    if (b > a) return -1;
+    if (a < b) return 1;
+    if (a > b) return -1;
   }
 
   /**

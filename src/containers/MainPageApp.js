@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { bindFunctions } from '../utils';
-import { fetchPersonalForms, fetchAllForms, showModal, hideModal, sendDeleteForm, sendCopyForm, sendForm, applySearchFilter} from '../actions';
 import { removeFMConfig, copyFMConfig, statusFMConfig } from '../config';
 import { modalTypes } from '../constants';
 import Table from '../components/Table/Table';
@@ -13,6 +12,10 @@ import ButtonGlyphicon from '../components/ButtonGlyphicon';
 import Tabs from '../components/journal/Tabs';
 import SearchBar from '../components/journal/SearchBar';
 import Spinner from '../components/LoadingSpinner';
+import * as myFormsList from '../redux/modules/myFormsList';
+import * as allFormsList from '../redux/modules/allFormsList';
+import * as modal from '../redux/modules/mainPageModal';
+
 
 import Moment from 'moment';
 Moment.locale('ru');
@@ -85,6 +88,18 @@ export default class MainPageApp extends AppComponent {
       ],
       [
         {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
+        },
+        {
           key: 'sent',
           title: 'Отправлено',
           renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
@@ -109,18 +124,6 @@ export default class MainPageApp extends AppComponent {
             const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
             return (values[1] - values[0]);
           }
-        },
-        {
-          key: 'resp_count',
-          title: 'Ответы',
-          renderCell: (value, data) => {
-            if (!data.sent)
-              return 'Не отправлялось';
-            if (value === null)
-              return 0;
-            return value;
-          },
-          sortFn: (a, b) => (b - a)
         }
       ],
       {
@@ -180,6 +183,18 @@ export default class MainPageApp extends AppComponent {
       ],
       [
         {
+          key: 'resp_count',
+          title: 'Ответы',
+          renderCell: (value, data) => {
+            if (!data.sent)
+              return 'Не отправлялось';
+            if (value === null)
+              return 0;
+            return value;
+          },
+          sortFn: (a, b) => (b - a)
+        },
+        {
           key: 'sent',
           title: 'Отправлено',
           renderCell: (value) => (value ? Moment(value).format(`${dateFormat} ${timeFormat}`) : 'Не отправлялось'),
@@ -204,18 +219,6 @@ export default class MainPageApp extends AppComponent {
             const values = [a, b].map((v) => v ? Moment(v).valueOf() : null);
             return (values[1] - values[0]);
           }
-        },
-        {
-          key: 'resp_count',
-          title: 'Ответы',
-          renderCell: (value, data) => {
-            if (!data.sent)
-              return 'Не отправлялось';
-            if (value === null)
-              return 0;
-            return value;
-          },
-          sortFn: (a, b) => (b - a)
         }
       ],
       {
@@ -271,7 +274,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'copyUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const submitHandler = (value) => (this.props.sendCopyForm(url, formId, value));
+    const submitHandler = (value) => (this.props.sendCopyForm(formId, value));
 
     const payload = copyFMConfig;
     payload.label = `Введите название для копии формы "${name}"`;
@@ -284,7 +287,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'deleteUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const confirmHandler = this.props.sendDeleteForm.bind(this, url, formId);
+    const confirmHandler = this.props.sendDeleteForm.bind(this, formId);
 
     const payload = removeFMConfig;
     payload.confirmHandler = confirmHandler;
@@ -296,7 +299,7 @@ export default class MainPageApp extends AppComponent {
     const urlType = 'sendUrl';
     const url = this.getUrl(urlType).replace('id', formId);
 
-    const sendHandler = (config) => this.props.sendForm(url, formId, config);
+    const sendHandler = (config) => this.props.sendForm(formId, config);
 
     const payload = {};
     payload.sendHandler = sendHandler;
@@ -361,21 +364,7 @@ export default class MainPageApp extends AppComponent {
   componentWillMount() {
     const urlType = 'getUrl';
     const url = this.getUrl(urlType);
-    this.props.fetchPersonalForms(url);
-  }
-
-  // componentDidMount() {
-  //   const urlType = 'getAllUrl';
-  //   const url = this.getUrl(urlType);
-  //   this.props.fetchAllForms(url);
-  // }
-
-  componentWillUpdate() {
-    console.time('page');
-  }
-
-  componentDidUpdate() {
-    console.timeEnd('page');
+    this.props.fetchPersonalForms();
   }
 
   render() {
@@ -443,63 +432,25 @@ export default class MainPageApp extends AppComponent {
   }
 }
 
-const getAllForms = createSelector(
-  (state) => state.formData.get('aForms'),
-  (forms) => {
-    if (forms === undefined)
-      return [];
-    return forms.toJS();
-  }
-);
-
-const getPersonalForms = createSelector(
-  (state) => state.formData.get('pForms'),
-  (forms) => {
-    if (forms === undefined)
-      return [];
-    return forms.toJS();
-  }
-);
-
-const getTableMode = (state) => state.tableMode;
-
-const getSearchStr = (state) => state.formData.get('searchStr');
-
-const getSearchResult = createSelector(
-  [getAllForms, getSearchStr],
-  (forms, search) => {
-    return forms.filter((form) => {
-      const {
-        surname,
-        title
-      } = form;
-      const re = new RegExp(search, 'i');
-      return (re.test(surname) || re.test(title));
-    });
-  }
-);
-
 const mapStateToProps = (state) => {
   return {
-    aFetching: state.formData.get('aFetching'),
-    //aForms: getAllForms(state),
-    aForms: getSearchStr(state) === '' ? getAllForms(state) : getSearchResult(state),
-    error: state.formData.get('error'),
-    pFetching: state.formData.get('pFetching'),
-    pForms: getPersonalForms(state),
-    modal: state.modal
+    aFetching: allFormsList.getStatus(state.allFormsList),
+    pFetching: myFormsList.getStatus(state.myFormsList),
+    aForms: allFormsList.getForms(state.allFormsList),
+    pForms: myFormsList.getForms(state.myFormsList),
+    error: null,
+    modal: modal.getModal(state.modal)
   };
 };
 
 const mapDispatchToProps = {
-  applySearchFilter,
-  fetchAllForms,
-  fetchPersonalForms,
-  showModal,
-  hideModal,
-  sendDeleteForm,
-  sendCopyForm,
-  sendForm
+  fetchAllForms: allFormsList.fetch,
+  fetchPersonalForms: myFormsList.fetch,
+  showModal: modal.show,
+  hideModal: modal.hide,
+  sendDeleteForm: myFormsList.remove,
+  sendCopyForm: myFormsList.copy,
+  sendForm: myFormsList.send
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainPageApp);

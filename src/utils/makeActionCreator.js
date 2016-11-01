@@ -1,4 +1,4 @@
-export default function makeActionCreator(type, ...argNames) {
+export default function createAction(type, ...argNames) {
   return function(...args) {
     let action = { type }
     argNames.forEach((arg, index) => {
