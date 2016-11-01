@@ -14,6 +14,7 @@ import Tabs from '../components/journal/Tabs';
 import Spinner from '../components/LoadingSpinner';
 import * as myFormsList from '../redux/modules/myFormsList';
 import * as allFormsList from '../redux/modules/allFormsList';
+import * as modal from '../redux/modules/mainPageModal';
 
 
 import Moment from 'moment';
@@ -426,24 +427,6 @@ export default class MainPageApp extends AppComponent {
   }
 }
 
-const getAllForms = createSelector(
-  (state) => state.formData.get('aForms'),
-  (forms) => {
-    if (forms === undefined)
-      return [];
-    return forms.toJS();
-  }
-);
-
-const getPersonalForms = createSelector(
-  (state) => state.formData.get('pForms'),
-  (forms) => {
-    if (forms === undefined)
-      return [];
-    return forms.toJS();
-  }
-);
-
 const mapStateToProps = (state) => {
   return {
     aFetching: allFormsList.getStatus(state.allFormsList),
@@ -451,15 +434,15 @@ const mapStateToProps = (state) => {
     aForms: allFormsList.getForms(state.allFormsList),
     pForms: myFormsList.getForms(state.myFormsList),
     error: null,
-    modal: state.modal
+    modal: modal.getModal(state.modal)
   };
 };
 
 const mapDispatchToProps = {
   fetchAllForms: allFormsList.fetch,
   fetchPersonalForms: myFormsList.fetch,
-  showModal,
-  hideModal,
+  showModal: modal.show,
+  hideModal: modal.hide,
   sendDeleteForm: myFormsList.remove,
   sendCopyForm: myFormsList.copy,
   sendForm: myFormsList.send

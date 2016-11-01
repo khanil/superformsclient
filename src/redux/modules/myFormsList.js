@@ -85,6 +85,8 @@ export default function(state = initialState, action) {
       return state.withMutations(state => {
         state
           .setIn(['map', action.id, 'sent'], Date.now())
+          .setIn(['map', action.id, 'expires'], action.config.expires)
+          .setIn(['map', action.id, 'resp_count'], 0)
           .set('busy', false);
       });
 
@@ -126,7 +128,8 @@ export function send(id, config = {}) {
   return {
     types: [SEND, SEND_SUCCESS, SEND_FAILURE],
     promise: (client) => client.post(uri, JSON.stringify(config)),
-    id
+    id,
+    config
   }
 }
 
