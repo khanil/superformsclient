@@ -35,8 +35,6 @@ export default class SearchBar extends Component {
   }
 
   render() {
-    const {
-    } = this.props;
     const value = this.state.value;
 
     return (
@@ -47,7 +45,7 @@ export default class SearchBar extends Component {
             className='form-control'
             type='text'
             onChange={this.inputHandler}
-            placeholder='Введите фамилию пользователя или название формы'
+            placeholder='Введите фамилию, имя пользователя'
             value={value}
           />
           <span className='input-group-btn'>

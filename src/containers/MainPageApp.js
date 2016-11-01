@@ -394,11 +394,11 @@ export default class MainPageApp extends AppComponent {
           tabs={this.tabs}
         />
 
-        <SearchBar
-          onSearch={applySearchFilter}
-        />
-
         <div style={aTableStyle}>
+          <SearchBar
+            onSearch={applySearchFilter}
+          />
+
           <Table
             columns={this.myColumnsALL}
             data={aForms}
@@ -444,6 +444,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+  applySearchFilter: allFormsList.filter,
   fetchAllForms: allFormsList.fetch,
   fetchPersonalForms: myFormsList.fetch,
   showModal: modal.show,
