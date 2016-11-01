@@ -447,10 +447,8 @@ const getPersonalForms = createSelector(
 const mapStateToProps = (state) => {
   return {
     aFetching: allFormsList.getStatus(state.allFormsList),
-    // pFetching: state.formData.get('pFetching'),
     pFetching: myFormsList.getStatus(state.myFormsList),
     aForms: allFormsList.getForms(state.allFormsList),
-    // pForms: getPersonalForms(state),
     pForms: myFormsList.getForms(state.myFormsList),
     error: null,
     modal: state.modal

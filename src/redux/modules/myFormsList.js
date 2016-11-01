@@ -49,7 +49,11 @@ export default function(state = initialState, action) {
       });
 
     case DELETE_SUCCESS:
-      return state.update('map', (map) => map.delete(action.id));
+      return state.withMutations(state => {
+        state
+          .update('map', (map) => map.delete(action.id))
+          .set('busy', false);
+      });
 
     case FETCH_SUCCESS:
       return state.merge({
@@ -58,20 +62,31 @@ export default function(state = initialState, action) {
       });
 
     case COPY_SUCCESS:
-      const origin = state.getIn(['map', action.id]);
-      return state.set(action.result.id, origin.merge({
-        id: action.result.id,
-        index: action.result.index,
-        title: action.name,
-        created: Date.now(),
-        sent: null,
-        edited: null,
-        expires: null,
-        allowrefill: false
-      }));
+      const copy = state
+        .getIn(['map', action.id])
+        .merge({
+          id: action.result.id,
+          index: action.result.index,
+          title: action.name,
+          created: Date.now(),
+          sent: null,
+          edited: null,
+          expires: null,
+          allowrefill: false
+        });
+
+      return state.withMutations(state => {
+        state
+          .setIn(['map', action.result.id], copy)
+          .set('busy', false);
+      });
 
     case SEND_SUCCESS:
-      return state.setIn(['map', action.id, 'sent'], Date.now());
+      return state.withMutations(state => {
+        state
+          .setIn(['map', action.id, 'sent'], Date.now())
+          .set('busy', false);
+      });
 
     default:
       return state;

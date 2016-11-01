@@ -10,11 +10,9 @@ export const FILTER_BY_NAME = 'FILTER_BY_NAME';
 //- State
 const initialState = Map({
   busy: false,
-  filter: null,
-  map: Map()
+  filter: 'Овч',
+  list: List()
 });
-
-import {fakeData} from './fakeData';
 
 function normalizeFormsList(list) {
   const map = {
@@ -47,11 +45,11 @@ function normalizeFormsList(list) {
   return map;
 }
 
-function convertToList(map) {
-  if (!map.list)
+function convertToList(list, map) {
+  if (!list)
     return [];
 
-  return map.list.map((form_id) => {
+  return list.map((form_id) => {
     const formEntity = map.entities.forms[form_id];
     const userEntity = map.entities.users[formEntity.user_id];
     return {...formEntity, ...userEntity};
@@ -71,15 +69,9 @@ export default function(state = initialState, action) {
       });
 
     case FETCH_SUCCESS:
-      const map = normalizeFormsList(fakeData);
-      // console.log(map);
-
-      // const list = convertToList(map);
-      // console.log(list);
-
       return state.merge({
         busy: false,
-        map
+        list: action.result
       });
 
     default:
@@ -96,22 +88,17 @@ export function fetch() {
   }
 }
 
+export function filter(str) {
+  return {
+    type: FILTER_BY_NAME,
+    payload: str
+  }
+}
+
 //- Selectors
-export const getFilter = (state) => state.get('filter');
 export const getStatus = (state) => state.get('busy');
 
 export const getForms = createSelector(
-  (state) => state.get('map'),
-  (map) => convertToList(map.toJS())
+  (state) => state.get('list'),
+  (list) => list.toJS()
 );
-
-export const getMap = (state) => state.get('map');
-
-export const getForms = createSelector(
-  getMap,
-  getFilter,
-  (map, filter) => {
-    const users = map.getIn('entities', 'users');
-    users.findEntry((user, user_id) => user.get('surname'))
-  }
-)
