@@ -33,15 +33,9 @@ export const TEST  = {
   label: 'Проба'
 }
 
-
 export const OTHER = {
   value: 'other',
   label: 'Другое'
-}
-
-export const TEST = {
-  value: 'test',
-  label: 'Проба'
 }
 
 export const ALL = [
