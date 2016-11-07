@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { bindFunctions } from '../utils';
 import { fetchSchemeAndResponses, fetchFormCSV, hideModal } from '../actions';
+import { formTypes } from '../constants';
 
 import Moment from 'moment';
 Moment.locale('ru');
@@ -56,10 +57,23 @@ export default class ResponsesTableApp extends AppComponent {
         return null;
 
       const title = item.get('title');
+      const description = item.get('description');
+
+      const descTip = description ?
+        <span
+          className='glyphicon glyphicon-info-sign th-tip'
+          aria-hidden='true'
+          title={description}
+        ></span> :
+        null;
+
       sLength++;
 
       return (
-        <th key={i}>{title}</th>
+        <th key={i}>
+          <span className='th-title'>{title}</span>
+          {descTip}
+        </th>
       );
     }));
 
@@ -138,9 +152,39 @@ export default class ResponsesTableApp extends AppComponent {
     if (this.props.scheme === undefined || this.props.responses === undefined)
       return null;
 
+    const title = this.props.scheme.get('title');
+    const description = this.props.scheme.get('description');
+    const type = this.props.scheme.get('type');
+    const basis = this.props.scheme.get('basis');
+    const basisname = this.props.scheme.get('basisname')
+
     return (
-      <div>
-        <h1>{this.props.scheme.get('title')}</h1>
+      <div className='form-responses'>
+        <div className='form-responses__header'>
+          <h1>
+            {title}
+            {description ? 
+              <span
+                className='glyphicon glyphicon-info-sign description'
+                aria-hidden='true'
+                title={description}
+              ></span> :
+              null
+            }
+          </h1>
+          {type ?
+            <div className='type'>
+              <span>Тип:</span><span>{formTypes[type.toUpperCase()].label}</span>
+            </div> :
+            null
+          }
+          {basis ?
+            <div className='basis'>
+              <span>Основание:</span><span>{basis}, </span><span>{basisname}</span>
+            </div> :
+            null
+          }
+        </div>
         <button type="button" className="btn btn-default" style={{marginBottom: '8px'}} onClick={this.csvClickHandler}>Выгрузить в XLSX</button>
         <div className='table-responsive'>
           <table className="table table-bordered table-hover table-responses">

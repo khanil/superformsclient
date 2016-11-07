@@ -4,7 +4,7 @@ import { FormGenerator, Form } from 'react-super-forms';
 import AppComponent from '../components/AppComponent';
 import PreviewButton from '../components/PreviewButton';
 import { sendScheme, fetchScheme, hideModal } from '../actions';
-import { formTypes } from '../constants';
+import { basisTypes, formTypes } from '../constants';
 import { bindFunctions } from '../utils';
 
 class FormGenerationApp extends AppComponent {
@@ -123,6 +123,7 @@ class FormGenerationApp extends AppComponent {
 				<div className='row'>
 					<div className={`form-generator-wrapper ${gClass}`} style={{display: isGVisible ? 'inline-block' : 'none'}}>
 						<FormGenerator
+							basisTypes={basisTypes.ALL}
 							formTypes={formTypes.ALL}
 							ref={this.getGeneratorRef}
 							onSubmit={this.handleSubmit}
@@ -132,7 +133,7 @@ class FormGenerationApp extends AppComponent {
 							Сохранить</button>
 						{super.render()}
 					</div>
-					<div className={`form-generator-preview-wrapper ${pClass}`} style={{display: isPVisible ? 'block' : 'none'}}>
+					<div className={`form-generator-preview-wrapper form-interview ${pClass}`} style={{display: isPVisible ? 'block' : 'none'}}>
 						<Form
 							formKey='preview'
 							scheme={this.props.previewScheme}
