@@ -91,7 +91,7 @@ export default function(state = initialState, action) {
       return state.merge({
         busy: false,
         // list: fakeList,
-        db: normalizeFormsList(fakeList)
+        db: normalizeFormsList(action.result)
       });
 
     case FILTER_BY_NAME:
