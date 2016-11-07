@@ -256,8 +256,6 @@ export function fetchPersonalForms(url) {
 	}
 }
 
-import forms from '../components/Table/formsJSON';
-
 export function fetchAllForms(url) {
 	return dispatch => {
 		dispatch( fetchAllFormsInit(url) );
@@ -271,7 +269,7 @@ export function fetchAllForms(url) {
 			if (xhr.status != 200) {
 				dispatch( fetchAllFormsFailure(xhr.response) );
 			} else {
-				dispatch( fetchAllFormsSuccess(forms/*JSON.parse(xhr.responseText)*/) );
+				dispatch( fetchAllFormsSuccess(JSON.parse(xhr.responseText)) );
 			}
 		}
 

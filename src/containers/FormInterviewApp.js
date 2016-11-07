@@ -66,7 +66,7 @@ export default class FormInterviewApp extends AppComponent {
 			return null;
 
 		return (
-			<div className='super-form-wrapper'>
+			<div className='super-form-wrapper form-interview'>
 				<Form formKey='interview' 
 					disabled={this.isDisabled}
 					scheme={this.props.scheme}

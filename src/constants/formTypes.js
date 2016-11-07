@@ -39,6 +39,11 @@ export const OTHER = {
   label: 'Другое'
 }
 
+export const TEST = {
+  value: 'test',
+  label: 'Проба'
+}
+
 export const ALL = [
   SURVEY, VOTING, REQUEST, MONITORING, INTERVIEW, TEST, OTHER
 ];
