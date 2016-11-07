@@ -15,6 +15,7 @@ import Spinner from '../components/LoadingSpinner';
 import * as myFormsList from '../redux/modules/myFormsList';
 import * as allFormsList from '../redux/modules/allFormsList';
 import * as modal from '../redux/modules/mainPageModal';
+import * as appConfig from '../redux/modules/mainPageApp';
 
 
 import Moment from 'moment';
@@ -32,7 +33,7 @@ export default class MainPageApp extends AppComponent {
     super(props);
 
     this.state = {
-      tableMode: PERSONAL
+      isPersonalFetched: false
     }
 
     this.myColumnsALL = [
@@ -249,7 +250,7 @@ export default class MainPageApp extends AppComponent {
 
     bindFunctions.call(this, ['redirectToResponsesPage', 'redirectToEditPage',
       'redirectToPreviewPage', 'remove', 'copy', 'send', 'showStatus',
-      'tableRowClickHandler', 'radioClickHandler', 'tabClickHandler']);
+      'tableRowClickHandler', 'tabClickHandler']);
   }
 
   redirectToResponsesPage(formId) {
@@ -317,7 +318,7 @@ export default class MainPageApp extends AppComponent {
   }
 
   tabClickHandler(tab) {
-    const currTableMode = this.state.tableMode;
+    const currTableMode = this.props.tab;
     if (currTableMode === tab)
       return;
 
@@ -325,11 +326,16 @@ export default class MainPageApp extends AppComponent {
       const urlType = 'getAllUrl';
       const url = this.getUrl(urlType);
       this.props.fetchAllForms(url);
+    } else {
+      if (this.state.isPersonalFetched == false) {
+        this.props.fetchPersonalForms();
+        this.setState({
+          isPersonalFetched: true
+        });
+      }
     }
 
-    this.setState({
-      tableMode: tab
-    });
+    this.props.tabChange(tab);
   }
 
   tableRowClickHandler(e, data) {
@@ -345,26 +351,19 @@ export default class MainPageApp extends AppComponent {
     this.redirectToPreviewPage(data.id);
   }
 
-  radioClickHandler(mode) {
-    const currTableMode = this.state.tableMode;
-    if (currTableMode === mode)
-      return;
-
-    if (mode === ALL) {
-      const urlType = 'getAllUrl';
-      const url = this.getUrl(urlType);
-      this.props.fetchAllForms(url);
-    }
-
-    this.setState({
-      tableMode: mode
-    });
-  }
-
   componentWillMount() {
-    const urlType = 'getUrl';
-    const url = this.getUrl(urlType);
-    this.props.fetchPersonalForms();
+    const tab = this._extraData['tab'] || this.props.tab;
+
+    this.props.tabInit(tab);
+
+    if (tab == ALL) {
+      this.props.fetchAllForms();
+    } else {
+      this.props.fetchPersonalForms();
+      this.setState({
+        isPersonalFetched: true
+      });
+    }
   }
 
   render() {
@@ -379,7 +378,7 @@ export default class MainPageApp extends AppComponent {
     if (pForms === undefined)
       return null;
 
-    const tableMode = this.state.tableMode;
+    const tableMode = this.props.tab;
 
     const pTableStyle = tableMode === PERSONAL ? null : {'display' : 'none'};
     const aTableStyle = tableMode === ALL ? null : {'display' : 'none'};
@@ -434,11 +433,14 @@ export default class MainPageApp extends AppComponent {
 
 const mapStateToProps = (state) => {
   return {
-    aFetching: allFormsList.getStatus(state.allFormsList),
-    pFetching: myFormsList.getStatus(state.myFormsList),
-    aForms: allFormsList.getForms(state.allFormsList),
-    pForms: myFormsList.getForms(state.myFormsList),
+    aFetching: allFormsList.getStatus(state.app.allFormsList),
+    pFetching: myFormsList.getStatus(state.app.myFormsList),
+    aForms: allFormsList.isFilterEmpty(state.app.allFormsList) ?
+      allFormsList.getForms(state.app.allFormsList) :
+      allFormsList.getFormsFilteredByUser(state.app.allFormsList),
+    pForms: myFormsList.getForms(state.app.myFormsList),
     error: null,
+    tab: appConfig.getTab(state.app),
     modal: modal.getModal(state.modal)
   };
 };
@@ -451,7 +453,9 @@ const mapDispatchToProps = {
   hideModal: modal.hide,
   sendDeleteForm: myFormsList.remove,
   sendCopyForm: myFormsList.copy,
-  sendForm: myFormsList.send
+  sendForm: myFormsList.send,
+  tabChange: appConfig.tabChange,
+  tabInit: appConfig.tabInit
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainPageApp);

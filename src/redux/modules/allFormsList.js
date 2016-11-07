@@ -18,7 +18,7 @@ export const FILTER_BY_NAME = 'FILTER_BY_NAME';
 const initialState = Map({
   busy: false,
   filter: '',
-  map: Map({
+  db: Map({
     list: List(),
     relations: Map(),
     entities: Map({
@@ -29,7 +29,7 @@ const initialState = Map({
 });
 
 function normalizeFormsList(list) {
-  const map = {
+  const db = {
     list: [],
     relations: {},
     entities: {
@@ -44,29 +44,29 @@ function normalizeFormsList(list) {
 
     const formEntity = { user_id, ...rest };
 
-    if (map.entities.users[user_id]) {
-      map.relations[user_id].push(form_id);
+    if (db.entities.users[user_id]) {
+      db.relations[user_id].push(form_id);
     } else {
       const userEntity = { user_id, name, surname, patronymic, author };
-      map.entities.users[user_id] = userEntity;
-      map.relations[user_id] = [form_id];
+      db.entities.users[user_id] = userEntity;
+      db.relations[user_id] = [form_id];
     }
 
-    map.entities.forms[form_id] = formEntity;
-    map.list.push(form_id);
+    db.entities.forms[form_id] = formEntity;
+    db.list.push(form_id);
   });
 
-  return map;
+  return db;
 }
 
-function convertToList(map) {
-  const list = map.get('list');
+function convertToList(db) {
+  const list = db.get('list');
   if (list.size == 0)
     return [];
 
   const result = list.map((form_id) => {
-    const formEntity = map.getIn(['entities', 'forms', form_id]); //map.entities.forms[form_id];
-    const userEntity = map.getIn(['entities', 'users', formEntity.get('user_id')]);//entities.users[formEntity.user_id];
+    const formEntity = db.getIn(['entities', 'forms', form_id]);
+    const userEntity = db.getIn(['entities', 'users', formEntity.get('user_id')]);
     return formEntity.merge(userEntity);
   });
 
@@ -91,7 +91,7 @@ export default function(state = initialState, action) {
       return state.merge({
         busy: false,
         // list: fakeList,
-        map: normalizeFormsList(fakeList)
+        db: normalizeFormsList(fakeList)
       });
 
     case FILTER_BY_NAME:
@@ -114,55 +114,96 @@ export function fetch() {
 export const filter = createAction(FILTER_BY_NAME, 'filter');
 
 //- Selectors
-export const getStatus = (state) => state.get('busy');
 export const getFilter = (state) => state.get('filter').trim();
-const getMap = (state) => state.get('map');
+const getDB = (state) => state.get('db');
+export const getStatus = (state) => state.get('busy');
+const getUsers = (state) => state.getIn(['db', 'entities', 'users']);
 
-// export const getForms = createSelector(
-//   (state) => state.get('list'),
-//   (list) => list.toJS()
-// );
+export const isFilterEmpty = createSelector(
+  getFilter,
+  (filter) => filter == ''
+);
+
+const getUsersByFilter = createSelector(
+  getUsers,
+  getFilter,
+  (users, filter) => filterUsers(users, filter)
+);
 
 export const getForms = createSelector(
-  getMap,
-  getFilter,
-  (map, filter) => {
-    // console.log(map.toJS());
-    // console.log(filter);
+  getDB,
+  (db) => convertToList(db)
+);
 
-    if (map.get('list').size == 0)
-      return [];
-
-    if (filter == '')
-      return convertToList(map);
-
-    const regExp = new RegExp(filter, 'i');
-
-    const users = map.getIn(['entities', 'users']);
-    const usersValidList = users.filter((user) => {
-      const { name, surname, patronymic } = user.toObject();
-      const str = surname + ' ' + name;
-      return regExp.test(str);
-    });
-
-    // console.log(usersValidList.toJS());
-
-    // find forms list by user
-    if (usersValidList.size == 0)
+export const getFormsFilteredByUser = createSelector(
+  getDB,
+  getUsersByFilter,
+  (db, users) => {
+    if (users.size == 0)
       return [];
 
     let list = List();
-    usersValidList.forEach((user, user_id) => {
-      const userFormsList = map.getIn(['relations', user_id]);
-      const formsList = userFormsList
-        .map((form_id) => {
-          const form = map.getIn(['entities', 'forms', form_id]);
-          return form.merge(user);
-        });
+    users.forEach((user, user_id) => {
+      const formIdList = db.getIn(['relations', user_id]);
+      const formsList = formIdList.map((id) => {
+        return db
+          .getIn(['entities', 'forms', id])
+          .merge(user);
+      });
+
       list = list.concat(formsList);
     });
-
 
     return list.toJS();
   }
 );
+
+function filterUsers(users, filter) {
+  const regExp = new RegExp(filter, 'i');
+
+  return users.filter((user) => {
+    const { name, surname, patronymic } = user.toObject();
+    const str = surname + ' ' + name;
+    return regExp.test(str);
+  });
+}
+
+// export const getForms = createSelector(
+//   getMap,
+//   getFilter,
+//   (map, filter) => {
+//     if (map.get('list').size == 0)
+//       return [];
+
+//     if (filter == '')
+//       return convertToList(map);
+
+//     const users = map.getIn(['entities', 'users']);
+//     const usersFiltered = filterUsers(users, filter);
+
+//     if (usersFiltered.size == 0) // found none
+//       return [];
+
+//     let list = List();
+//     usersFiltered.forEach((user, user_id) => {
+//       const userFormsList = map.getIn(['relations', user_id]);
+//       const formsList = userFormsList
+//         .map((form_id) => {
+//           const form = map.getIn(['entities', 'forms', form_id]);
+//           return form.merge(user);
+//         });
+//       list = list.concat(formsList);
+//     });
+
+//     return list.toJS();
+//   }
+// );
+
+// function getFormsByUser(map, user, user_id) {
+//   const formsIdList = map.getIn(['relations', user_id]);
+//   return formsIdList.map((id) => {
+//     return map
+//       .getIn(['entities', 'forms', 'id'])
+//       .merge(user);
+//   });
+// }
