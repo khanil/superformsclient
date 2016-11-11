@@ -57,16 +57,30 @@ export default class MainPageApp extends AppComponent {
         key: 'title',
         title: 'Название'
       },
-      {
-        key: 'type',
-        title: 'Назначение',
-        renderCell: (value) => (formTypes[value.toUpperCase()].label),
-        sortFn: (a, b) => {
-          const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
-          if (a_label < b_label) return 1;
-          if (a_label > b_label) return -1;
+      [
+        {
+          key: 'type',
+          title: 'Назначение',
+          renderCell: (value) => (formTypes[value.toUpperCase()].label),
+          sortFn: (a, b) => {
+            const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
+            if (a_label < b_label) return 1;
+            if (a_label > b_label) return -1;
+          }
+        },
+        {
+          key: 'basis',
+          title: 'Основание',
+          renderCell: (value, data) => {
+            if (!value)
+              return 'Не задано';
+
+            return (
+              <span title={data.basisname}>{value}</span>
+            );
+          }
         }
-      },
+      ],
       [
         {
           key: 'created',
@@ -152,16 +166,30 @@ export default class MainPageApp extends AppComponent {
         key: 'title',
         title: 'Название'
       },
-      {
-        key: 'type',
-        title: 'Назначение',
-        renderCell: (value) => (formTypes[value.toUpperCase()].label),
-        sortFn: (a, b) => {
-          const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
-          if (a_label < b_label) return 1;
-          if (a_label > b_label) return -1;
+      [
+        {
+          key: 'type',
+          title: 'Назначение',
+          renderCell: (value) => (formTypes[value.toUpperCase()].label),
+          sortFn: (a, b) => {
+            const [a_label, b_label] = [formTypes[a.toUpperCase()].label, formTypes[b.toUpperCase()].label];
+            if (a_label < b_label) return 1;
+            if (a_label > b_label) return -1;
+          }
+        },
+        {
+          key: 'basis',
+          title: 'Основание',
+          renderCell: (value, data) => {
+            if (!value)
+              return 'Не задано';
+
+            return (
+              <span title={data.basisname}>{value}</span>
+            );
+          }
         }
-      },
+      ],
       [
         {
           key: 'created',
