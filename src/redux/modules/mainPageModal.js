@@ -49,7 +49,7 @@ export default function(state = initialState, action) {
       });
 
     case myFormsList.SEND_SUCCESS:
-      const payload = sendFMSuccessConfig(action.formId);
+      const payload = sendFMSuccessConfig(action.id);
 
       return state.merge({
         visible: true,

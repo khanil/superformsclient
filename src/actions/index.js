@@ -113,6 +113,7 @@ export function sendScheme(url, scheme) {
 				dispatch( sendSchemeFailure(xhr.response) );
 			} else {
 				dispatch( sendSchemeSuccess(xhr.responseText) );
+				document.location.pathname = '/';
 			}
 		}
 
