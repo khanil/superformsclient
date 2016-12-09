@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import shallowCompare from 'react-addons-shallow-compare';
 
 /** Dropdown component */
@@ -10,13 +11,36 @@ export default class Dropdown extends Component {
       opened: false
     }
 
+    this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.optionClickHandler = this.optionClickHandler.bind(this);
     this.toggleDropdown = this.toggleDropdown.bind(this);
   }
 
+  componentDidMount() {
+    document.addEventListener('click', this.handleDocumentClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleDocumentClick, false);
+  }
+
+  handleDocumentClick(event) {
+    if (!ReactDOM.findDOMNode(this).contains(event.target)) {
+      this.closeDropdown();
+    }
+  }
+
   optionClickHandler(col) {
     this.props.changeHandler(this.props.id, col);
-    this.toggleDropdown();
+    this.closeDropdown();
+  }
+
+  openDropdown() {
+    this.setState({opened: true });
+  }
+
+  closeDropdown() {
+    this.setState({opened: false });
   }
 
   toggleDropdown() {
