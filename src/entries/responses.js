@@ -1,18 +1,15 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import configureStore from '../store/configureStore'
+import configureStore from '../redux/create';
 
 import ResponsesTableApp from '../containers/ResponsesTableApp';
 
 import { combineReducers } from 'redux';
-import { formData, modal } from '../reducers';
-import { forms } from 'react-super-forms';
+import responsesTable from '../redux/modules/responsesTable';
 
 const rootReducer = combineReducers({
-  formData,
-  forms,
-  modal
+  responsesTable
 });
 
 const store = configureStore({}, rootReducer);

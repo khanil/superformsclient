@@ -1,35 +1,61 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
+import { FormInfo, ControlPanel } from '../components/ResponsesTable';
 import { bindFunctions } from '../utils';
-import { fetchSchemeAndResponses, fetchFormCSV, hideModal } from '../actions';
 import { formTypes } from '../constants';
+import * as responsesTable from '../redux/modules/responsesTable';
 
 import Moment from 'moment';
 Moment.locale('ru');
 const formatDate = 'DD/MM/YY';
-const formatTime = 'HH:mm';
+const formatTime = 'HH:mm:ss';
+
+const UPDATE_RESPONSES_TIMEOUT = 300000;
 
 export default class ResponsesTableApp extends AppComponent {
   constructor(props) {
     super(props);
 
-    bindFunctions.call(this, ['renderTableHeader', 'renderTableRows', 'renderTableRow',
-      'rowClickHandler', 'csvClickHandler', 'pushSection']);
+    bindFunctions.call(this,
+      [
+        'pushSection',
+        'refreshResponses',
+        'renderTableHeader',
+        'renderTableRow',
+        'renderTableRows',
+        'rowClickHandler',
+      ]
+    );
   }
 
   componentWillMount() {
-    const urlType = 'getUrl';
-    const url = this.getUrl(urlType);
-    this.props.fetchSchemeAndResponses(url);
+    const myRegexp = /forms\/(.+)\//g;
+    const match = myRegexp.exec(document.location.pathname);
+    this.formId = match[1];
+
+    this.props.fetchForm(this.formId);
+    this.props.fetchResponses(this.formId);
+
+    this.refreshTimer = setTimeout(this.refreshResponses, UPDATE_RESPONSES_TIMEOUT);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timerId);
   }
 
   pushSection(length, text, key) {
     return <th key={key} colSpan={length} style={{textAlign: 'center', verticalAlign: 'middle'}}>{text}</th>
   }
 
+  refreshResponses() {
+    this.props.fetchResponses(this.formId);
+
+    this.refreshTimer = setTimeout(this.refreshResponses, UPDATE_RESPONSES_TIMEOUT);
+  }
+
   renderTableHeader(scheme) {
-    const header = [<th>#</th>, <th>Дата</th>];
+    const header = [<th key={0}>#</th>, <th key={1}>Дата</th>];
     const sections = [];
     let sLength = 2; //default, because of # and date columns
     let sCounter = 0;
@@ -70,7 +96,7 @@ export default class ResponsesTableApp extends AppComponent {
       sLength++;
 
       return (
-        <th key={i}>
+        <th key={i + 2}>
           <span className='th-title'>{title}</span>
           {descTip}
         </th>
@@ -95,7 +121,7 @@ export default class ResponsesTableApp extends AppComponent {
   renderTableRows(responses, scheme) {
     const questions = scheme.get('items').filter(item => item.get('_type') === 'question');
 
-    return responses.map((response, i) => (
+    return responses.reverse().map((response, i) => (
       <tr key={i} onClick={() => this.rowClickHandler(response.get('id'))}
         style={{cursor: 'pointer'}}>
         {this.renderTableRow(response.get('list'), i, response.get('received'), questions)}</tr>
@@ -110,9 +136,7 @@ export default class ResponsesTableApp extends AppComponent {
 
     row.push( response.map((answer, i) => {
       const type = questions.getIn([i, 'type']);
-      console.log(type);
       let text = answer;
-      console.log(text);
 
       switch (type.toUpperCase()) {
         case 'DATE' :
@@ -148,50 +172,44 @@ export default class ResponsesTableApp extends AppComponent {
     document.location.pathname = url;
   }
 
-  csvClickHandler() {
-    const urlType = 'buildCSVUrl';
-    const url = this.getUrl(urlType);
-    document.location.pathname = url;
-  }
-
   render() {
     if (this.props.scheme === undefined || this.props.responses === undefined)
       return null;
 
+    /*TODO: привести в порядок*/
     const title = this.props.scheme.get('title');
     const description = this.props.scheme.get('description');
-    const type = this.props.scheme.get('type');
+    let type = this.props.scheme.get('type');
+    type = type ? formTypes[type.toUpperCase()].label : null;
     const basis = this.props.scheme.get('basis');
-    const basisname = this.props.scheme.get('basisname')
+    const basisname = this.props.scheme.get('basisname');
+
+    const {
+      fetchResponses,
+      fetchXLSX,
+      updating
+    } = this.props;
+
+    const updated = Moment(this.props.updated).format(formatTime);
 
     return (
       <div className='form-responses'>
-        <div className='form-responses__header'>
-          <h1>
-            {title}
-            {description ? 
-              <span
-                className='glyphicon glyphicon-info-sign description'
-                aria-hidden='true'
-                title={description}
-              ></span> :
-              null
-            }
-          </h1>
-          {type ?
-            <div className='type'>
-              <span>Тип:</span><span>{formTypes[type.toUpperCase()].label}</span>
-            </div> :
-            null
-          }
-          {basis ?
-            <div className='basis'>
-              <span>Основание:</span><span>{basis}, </span><span>{basisname}</span>
-            </div> :
-            null
-          }
-        </div>
-        <button type="button" className="btn btn-default" style={{marginBottom: '8px'}} onClick={this.csvClickHandler}>Выгрузить в XLSX</button>
+        <FormInfo
+          title={title}
+          description={description}
+          type={type}
+          basis={basis}
+          basisname={basisname}
+        />
+
+        <ControlPanel
+          updating={updating}
+          updated={updated}
+          fetchResponses={fetchResponses.bind(null, this.formId)}
+          fetchXLSX={fetchXLSX.bind(null, this.formId)}
+        />
+        
+        {/*TODO: вынести в отдельный компонент*/}
         <div className='table-responsive'>
           <table className="table table-bordered table-hover table-responses">
             {this.renderTableHeader(this.props.scheme)}
@@ -205,23 +223,20 @@ export default class ResponsesTableApp extends AppComponent {
   }
 }
 
-ResponsesTableApp.propTypes = {
-  
-}
-
 const mapStateToProps = (state) => {
+  const rT = state.responsesTable;
   return {
-    scheme: state.formData.get('scheme'),
-    responses: state.formData.get('responses'),
-    error: state.formData.get('error'),
-    modal: state.modal
+    scheme: responsesTable.getScheme(rT),
+    responses: responsesTable.getResponses(rT),
+    updated: responsesTable.getLastUpdateTime(rT),
+    updating: responsesTable.isUpdating(rT)
   };
 };
 
 const mapDispatchToProps = {
-  fetchSchemeAndResponses,
-  fetchFormCSV,
-  hideModal
+  fetchForm: responsesTable.fetchForm,
+  fetchResponses: responsesTable.fetchResponses,
+  fetchXLSX: responsesTable.fetchXLSX
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResponsesTableApp);
