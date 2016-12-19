@@ -18,6 +18,9 @@ const initialState = Map({
 export default function(state = initialState, action) {
   switch (action.type) {
 
+    case form.FETCH_FAILURE:
+      return state.set('fatalError', action.error);
+
     case form.FETCH_SUCCESS:
       return state.merge({
         form: action.result
@@ -27,6 +30,9 @@ export default function(state = initialState, action) {
       return state.merge({
         updating: true
       });
+
+    case responses.FETCH_FAILURE:
+      return state.set('fatalError', action.error);
 
     case responses.FETCH_SUCCESS:
       return state.merge({
@@ -63,3 +69,5 @@ export const getScheme = (state) => state.getIn(['form', 'scheme']);
 export const getLastUpdateTime = (state) => state.get('updated');
 
 export const isUpdating = (state) => state.get('updating');
+
+export const getFatalError = (state) => state.get('fatalError');

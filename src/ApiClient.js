@@ -15,8 +15,11 @@ function http(uri, method, body) {
         }
         resolve(response);
       } else {
-        const error = new Error(this.statusText);
-        error.code = this.status;
+        const error = new Error();
+        const { 
+          responseURL, status, statusText
+        } = this;
+        error.message = `${responseURL} ${statusText} ${status}`;
         reject(error);
       }
     };

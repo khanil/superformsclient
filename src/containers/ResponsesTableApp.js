@@ -2,16 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AppComponent from '../components/AppComponent';
 import { FormInfo, ControlPanel } from '../components/ResponsesTable';
+import FatalError from '../components/modals/FatalError';
 import { bindFunctions } from '../utils';
 import { formTypes } from '../constants';
+import * as config from '../redux/modules/config';
 import * as responsesTable from '../redux/modules/responsesTable';
 
 import Moment from 'moment';
 Moment.locale('ru');
 const formatDate = 'DD/MM/YY';
 const formatTime = 'HH:mm:ss';
-
-const UPDATE_RESPONSES_TIMEOUT = 300000;
 
 export default class ResponsesTableApp extends AppComponent {
   constructor(props) {
@@ -30,14 +30,20 @@ export default class ResponsesTableApp extends AppComponent {
   }
 
   componentWillMount() {
-    const myRegexp = /forms\/(.+)\//g;
-    const match = myRegexp.exec(document.location.pathname);
-    this.formId = match[1];
+    this.props.getConfig([
+      'form_id',
+      'timeout'
+    ]).then(
+      (result) => {
+        const formId = this.props.config['form_id'];
+        const timeout = this.props.config['timeout'];
 
-    this.props.fetchForm(this.formId);
-    this.props.fetchResponses(this.formId);
-
-    this.refreshTimer = setTimeout(this.refreshResponses, UPDATE_RESPONSES_TIMEOUT);
+        this.props.fetchForm(formId);
+        this.props.fetchResponses(formId);
+        this.refreshTimer = setTimeout(this.refreshResponses, timeout);
+      },
+      (error) => console.error(error)
+    );
   }
 
   componentWillUnmount() {
@@ -49,9 +55,12 @@ export default class ResponsesTableApp extends AppComponent {
   }
 
   refreshResponses() {
-    this.props.fetchResponses(this.formId);
+    const formId = this.props.config['form_id'];
+    const timeout = this.props.config['timeout'];
 
-    this.refreshTimer = setTimeout(this.refreshResponses, UPDATE_RESPONSES_TIMEOUT);
+    this.props.fetchResponses(formId);
+
+    this.refreshTimer = setTimeout(this.refreshResponses, timeout);
   }
 
   renderTableHeader(scheme) {
@@ -108,7 +117,7 @@ export default class ResponsesTableApp extends AppComponent {
       sections.push( this.pushSection(length, sName, sCounter) );
     }
 
-    console.log(sections);
+    // console.log(sections);
 
     return (
       <thead>
@@ -121,16 +130,16 @@ export default class ResponsesTableApp extends AppComponent {
   renderTableRows(responses, scheme) {
     const questions = scheme.get('items').filter(item => item.get('_type') === 'question');
 
-    return responses.reverse().map((response, i) => (
+    return responses.map((response, i) => (
       <tr key={i} onClick={() => this.rowClickHandler(response.get('id'))}
         style={{cursor: 'pointer'}}>
-        {this.renderTableRow(response.get('list'), i, response.get('received'), questions)}</tr>
+        {this.renderTableRow(response.get('list'), responses.size - i, response.get('received'), questions)}</tr>
     ));
   }
 
   renderTableRow(response, rowN, date, questions) {
     const row = [
-      <td key={`${rowN}_0`}>{rowN + 1}</td>,
+      <td key={`${rowN}_0`}>{rowN}</td>,
       <td key={`${rowN}_1`}>{Moment(date).format(`${formatDate} ${formatTime}`)}</td>
     ];
 
@@ -167,12 +176,19 @@ export default class ResponsesTableApp extends AppComponent {
   }
 
   rowClickHandler(responseId) {
-    const urlType = 'responsePreviewUrl';
-    const url = this.getUrl(urlType).replace('response_id', responseId);
-    document.location.pathname = url;
+    const form_id = this.props.config['form_id'];
+
+    const uri = `/forms/${form_id}/responses/${responseId}`
+    document.location.pathname = uri;
   }
 
   render() {
+    if (this.props.fatalError) {
+      return (
+        <FatalError error={this.props.fatalError}/>
+      );
+    }
+
     if (this.props.scheme === undefined || this.props.responses === undefined)
       return null;
 
@@ -190,6 +206,8 @@ export default class ResponsesTableApp extends AppComponent {
       updating
     } = this.props;
 
+    const formId = this.props.config['form_id'];
+
     const updated = Moment(this.props.updated).format(formatTime);
 
     return (
@@ -205,8 +223,8 @@ export default class ResponsesTableApp extends AppComponent {
         <ControlPanel
           updating={updating}
           updated={updated}
-          fetchResponses={fetchResponses.bind(null, this.formId)}
-          fetchXLSX={fetchXLSX.bind(null, this.formId)}
+          fetchResponses={fetchResponses.bind(null, formId)}
+          fetchXLSX={fetchXLSX.bind(null, formId)}
         />
         
         {/*TODO: вынести в отдельный компонент*/}
@@ -224,8 +242,12 @@ export default class ResponsesTableApp extends AppComponent {
 }
 
 const mapStateToProps = (state) => {
+  const cfg = state.config;
   const rT = state.responsesTable;
+
   return {
+    fatalError: config.getFatalError(cfg) || responsesTable.getFatalError(rT) || false,
+    config: config.getConfig(cfg),
     scheme: responsesTable.getScheme(rT),
     responses: responsesTable.getResponses(rT),
     updated: responsesTable.getLastUpdateTime(rT),
@@ -234,6 +256,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+  getConfig: config.get,
   fetchForm: responsesTable.fetchForm,
   fetchResponses: responsesTable.fetchResponses,
   fetchXLSX: responsesTable.fetchXLSX

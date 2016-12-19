@@ -8,6 +8,7 @@ export const FETCH_FAILURE = 'response/FETCH_FAILURE';
 export const FETCH_XLSX = 'response/FETCH_XLSX';
 export const FETCH_XLSX_SUCCESS = 'response/FETCH_XLSX_SUCCESS';
 export const FETCH_XLSX_FAILURE = 'response/FETCH_XLSX_FAILURE';
+
 //- State
 
 //- Reducer

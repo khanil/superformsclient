@@ -4,7 +4,7 @@ import { modalTypes } from '../constants';
 import { ModalConfirm, ModalError, ModalSuccess, ModalSingleInput, ModalSend,
 ModalMessage } from './Modals';
 
-const DOMDataContainerId = 'info';
+const DOMDataContainerId = 'config';
 
 //Helper react component, that extracts additional helper data,
 //such as API callbacks from DOM markup
